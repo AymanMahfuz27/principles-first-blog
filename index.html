@@ -193,7 +193,7 @@
 
       // Calls the GitHub API to get the list of items in GITHUB_DIR
       async function getFilesFromGithub() {
-        const base = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`;
+        const base = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/`;
         const resp = await fetch(base);
         if (!resp.ok) {
           console.error(`Failed to list files from GitHub: ${resp.status}`);
