@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Auto-Discovered .txt Blogs from GitHub</title>
+
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts & Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Basic dark aesthetic */
+      html {
+        font-family: 'Manrope', sans-serif;
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #000;
+        color: #fff;
+      }
+
+      /* Sidebar toggle for mobile */
+      .nav-toggle {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        font-size: 1.5rem;
+        color: #fff;
+        cursor: pointer;
+        z-index: 1000;
+        display: block;
+      }
+      @media (min-width: 1024px) {
+        .nav-toggle {
+          display: none;
+        }
+      }
+
+      /* Sidebar */
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 220px;
+        height: 100vh;
+        background-color: #000;
+        border-right: 1px solid #333;
+        padding: 2rem;
+        overflow-y: auto;
+        box-sizing: border-box;
+        z-index: 999;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      #sidebar.open {
+        transform: translateX(0);
+      }
+      @media (min-width: 1024px) {
+        #sidebar {
+          transform: translateX(0);
+        }
+      }
+      #sidebar ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+      #sidebar li {
+        margin-bottom: 1.5rem;
+      }
+      #sidebar li a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      #sidebar li a:hover {
+        color: #bbb;
+      }
+
+      /* Main content margin on large screens for sidebar */
+      main {
+        margin-left: 0;
+        transition: margin-left 0.3s ease;
+      }
+      @media (min-width: 1024px) {
+        main {
+          margin-left: 220px;
+        }
+      }
+
+      /* Preserve spacing in blog reading */
+      .preserve-whitespace {
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Hamburger toggle (mobile) -->
+    <div class="nav-toggle" onclick="toggleSidebar()">☰</div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+      <ul>
+        <li><a href="#" onclick="showLandingPage()">Home</a></li>
+        <div id="sidebar-blogs"></div>
+      </ul>
+    </nav>
+
+    <main class="min-h-screen">
+      <!-- Landing: snippet list -->
+      <section
+        id="landing-page"
+        class="mx-auto max-w-2xl w-full px-4 py-8 space-y-6"
+      >
+        <h1 class="text-2xl font-bold mb-4">My Auto-Discovered Blogs</h1>
+        <div id="blog-list" class="space-y-4"></div>
+      </section>
+
+      <!-- Blog reading area -->
+      <section id="blog-content" class="hidden">
+        <header
+          class="sticky top-0 bg-black/90 backdrop-blur-md p-4 border-b border-gray-800 flex flex-col gap-2"
+        >
+          <h2 id="blog-title" class="text-2xl font-bold"></h2>
+          <p id="blog-meta" class="text-sm text-gray-400"></p>
+        </header>
+        <article
+          id="blog-body"
+          class="p-6 prose prose-invert max-w-none mx-auto preserve-whitespace"
+        ></article>
+      </section>
+    </main>
+
+    <script>
+      // >>>>>>>>>>>>>>>> SET THESE <<<<<<<<<<<<<<
+      const GITHUB_OWNER = 'YOUR_USER';  // e.g. 'octocat'
+      const GITHUB_REPO  = 'my-blog';    // the repository name
+      const GITHUB_DIR   = '';          // if .txt files are in root, leave blank. Otherwise 'blogs'
+
+      // If your repo is public, no auth is needed. For private, you'd need a token or other approach.
+
+      // We'll store discovered blogs here:
+      let blogs = [];
+
+      // Toggle sidebar on small screens
+      function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+      }
+
+      function showLandingPage() {
+        document.getElementById('blog-content').classList.add('hidden');
+        document.getElementById('landing-page').classList.remove('hidden');
+      }
+
+      function showBlog(blogId) {
+        const blog = blogs.find((b) => b.id === blogId);
+        if (!blog) return;
+
+        document.getElementById('landing-page').classList.add('hidden');
+        document.getElementById('blog-content').classList.remove('hidden');
+
+        document.getElementById('blog-title').innerText = blog.title;
+        document.getElementById('blog-meta').innerText = `File: ${blog.filename}`;
+        // Insert text with spacing preserved
+        document.getElementById('blog-body').textContent = blog.content;
+      }
+
+      document.addEventListener('DOMContentLoaded', async () => {
+        // 1) Load the directory listing from GitHub
+        const files = await getFilesFromGithub();
+        // 2) Filter for .txt
+        const txtFiles = files.filter(f => f.name.endsWith('.txt'));
+        // 3) For each .txt, fetch raw content
+        blogs = await Promise.all(txtFiles.map(loadOneBlog));
+        // 4) Render the UI
+        renderAll();
+      });
+
+      // Calls the GitHub API to get the list of items in GITHUB_DIR
+      async function getFilesFromGithub() {
+        const base = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_DIR}`;
+        const resp = await fetch(base);
+        if (!resp.ok) {
+          console.error(`Failed to list files from GitHub: ${resp.status}`);
+          return [];
+        }
+        return resp.json(); // returns an array of {name, path, download_url, ...}
+      }
+
+      // For each .txt file, we get the raw content from `download_url`
+      async function loadOneBlog(fileObj) {
+        try {
+          const contentResp = await fetch(fileObj.download_url);
+          if (!contentResp.ok) {
+            console.error(`Failed to fetch content from ${fileObj.download_url}`);
+            return null;
+          }
+          const text = await contentResp.text();
+
+          // The 'title' is the file name minus .txt
+          const nameWithoutExt = fileObj.name.replace(/\\.txt$/i, '');
+          const snippet = text.length > 80 ? text.slice(0, 80) + '...' : text;
+
+          return {
+            id: fileObj.name,        // unique ID
+            filename: fileObj.name,  // the .txt name
+            title: nameWithoutExt,
+            content: text.trim(),
+            snippet: snippet.trim()
+          };
+        } catch(e) {
+          console.error(e);
+          return null;
+        }
+      }
+
+      // Renders the sidebar & snippet listing
+      function renderAll() {
+        // Filter out null or failed blogs
+        blogs = blogs.filter(b => b !== null);
+
+        // Sidebar links
+        const sidebarDiv = document.getElementById('sidebar-blogs');
+        sidebarDiv.innerHTML = '';
+        blogs.forEach((b) => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = '#';
+          a.textContent = b.title;
+          a.onclick = () => showBlog(b.id);
+          li.appendChild(a);
+          sidebarDiv.appendChild(li);
+        });
+
+        // Main snippet listing
+        const blogListDiv = document.getElementById('blog-list');
+        blogListDiv.innerHTML = '';
+        blogs.forEach((b) => {
+          const card = document.createElement('article');
+          card.className = 'bg-[#151515] rounded-lg p-6 shadow hover:shadow-lg transition-transform hover:-translate-y-1';
+
+          const h2 = document.createElement('h2');
+          h2.className = 'text-xl font-bold';
+          h2.textContent = b.title;
+          card.appendChild(h2);
+
+          const meta = document.createElement('p');
+          meta.className = 'text-sm text-gray-400';
+          meta.textContent = `File: ${b.filename}`;
+          card.appendChild(meta);
+
+          const snippetP = document.createElement('p');
+          snippetP.className = 'mt-2 text-gray-200 whitespace-pre-wrap';
+          snippetP.textContent = b.snippet;
+          card.appendChild(snippetP);
+
+          const btn = document.createElement('button');
+          btn.className = 'mt-4 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-lg';
+          btn.textContent = 'Read More';
+          btn.onclick = () => showBlog(b.id);
+          card.appendChild(btn);
+
+          blogListDiv.appendChild(card);
+        });
+      }
+    </script>
+  </body>
+</html>
