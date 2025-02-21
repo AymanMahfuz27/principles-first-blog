@@ -194,7 +194,6 @@
         document.getElementById('blog-content').classList.remove('hidden');
 
         document.getElementById('blog-title').innerText = blog.title;
-        document.getElementById('blog-meta').innerText = `File: ${blog.filename}`;
 
         // Render with Marked.js for rich Markdown
         document.getElementById('blog-body').innerHTML = marked.parse(blog.content);
@@ -311,7 +310,6 @@
 
           const meta = document.createElement('p');
           meta.className = 'text-sm text-gray-400';
-          meta.textContent = `File: ${b.filename}`;
           card.appendChild(meta);
 
           const snippetP = document.createElement('p');
