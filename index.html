@@ -114,6 +114,11 @@
       .preserve-whitespace {
         white-space: pre-wrap;
       }
+
+      a {
+        color: #1e90ff;
+        text-decoration: none;
+      }
     </style>
   </head>
 
@@ -312,10 +317,10 @@
           meta.className = 'text-sm text-gray-400';
           card.appendChild(meta);
 
-          const snippetP = document.createElement('p');
-          snippetP.className = 'mt-2 text-gray-200 whitespace-pre-wrap';
-          snippetP.textContent = b.snippet;
-          card.appendChild(snippetP);
+          // const snippetP = document.createElement('p');
+          // snippetP.className = 'mt-2 text-gray-200 whitespace-pre-wrap';
+          // snippetP.textContent = b.snippet;
+          // card.appendChild(snippetP);
 
           const btn = document.createElement('button');
           btn.className = 'mt-4 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-lg';
