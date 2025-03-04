@@ -282,8 +282,23 @@
           // If there's no date prefix, treat it as an older date or fallback
           return new Date('1970-01-01');
         }
+        //create a dictionary with the month names
+        const monthNames = {
+          '01': 'January',
+          '02': 'February',
+          '03': 'March',
+          '04': 'April',
+          '05': 'May',
+          '06': 'June',
+          '07': 'July',
+          '08': 'August',
+          '09': 'September',
+          '10': 'October',
+          '11': 'November',
+          '12': 'December'
+        };
         const [_, year, month, day] = match;
-        return new Date(`${year}-${month}-${day}`);
+        return new Date(`${monthNames[month]} ${day}, ${year}`);
       }
 
       // Renders the sidebar & snippet listing
@@ -321,6 +336,11 @@
           // snippetP.className = 'mt-2 text-gray-200 whitespace-pre-wrap';
           // snippetP.textContent = b.snippet;
           // card.appendChild(snippetP);
+
+          const dateDiv = document.createElement('h3');
+          dateDiv.className = 'text-sm text-gray-400';
+          const date = extractDateFromFilename(b.filename);
+          card.appendChild(dateDiv);
 
           const btn = document.createElement('button');
           btn.className = 'mt-4 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-lg';
