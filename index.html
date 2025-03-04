@@ -228,7 +228,7 @@
           // Parse YYYY-MM-DD from the filename
           const dateA = extractDateFromFilename(a.filename);
           const dateB = extractDateFromFilename(b.filename);
-          return dateA - dateB; // oldest first; if you want newest first, do (dateB - dateA)
+          return dateB - dateA; 
         });
 
         // 6) Render the UI
