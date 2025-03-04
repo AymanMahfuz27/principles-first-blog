@@ -1,9 +1,8 @@
 ## **Are We Only Scratching the Surface of LLM Intelligence?**
 
-**Edit:** As of March 3rd, 2025, looks like there's some merit to this blog after all! https://arxiv.org/abs/2502.17416 
-
-
 **A Brief Disclaimer:** This post reflects my evolving thinking and questions rather than settled conclusions. My goal is to spark discussion about the nature of AI intelligence, not present definitive proof. While some ideas here draw on existing research, others remain speculative.
+
+**Edit:** As of March 3rd, 2025, looks like there's some merit to this blog after all! https://arxiv.org/abs/2502.17416 
 
 ---
 
