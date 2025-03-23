@@ -133,6 +133,9 @@
         <li>
           <a href="#" onclick="showLandingPage()" class="font-bold">Home</a>
         </li>
+        <li>
+          <a href="https://aymanmahfuzportfolio.com" target="_blank" class="font-bold">Visit my portfolio</a>
+        </li>
         <hr class="my-3 border-gray-600" />
         <!-- Blog links go here -->
         <div id="sidebar-blogs"></div>
@@ -148,12 +151,15 @@
       >
         <h1 class="text-4xl font-extrabold mb-4">Principles, First</h1>
         <p class="text-gray-300">
-          Welcome to my blog! Here, I share my thoughts on a variety of topics
-          that interest me, things I'm up to, or ideas I'm curious about,
-          through first principles, but backwards. I promise it makes sense,
-          <a href="#" onclick="showBlog('2025-01-30-Principles, First.md')"
-            >here's what I mean</a
-          >
+          Welcome to my blog! I'm usually not the type to openly share my
+          thoughts online, even though I know many people I admire—researchers
+          and innovators—do so regularly. This blog is a step out of my comfort
+          zone, an experiment and a way to build my intuition through writing.
+          Here, you'll find my thoughts, projects, and ideas—some carefully
+          considered, others purely speculative. I fully acknowledge many won't
+          age gracefully, and I'm certainly no expert in everything I share. My
+          goal is simply to document my journey through deep learning, learn by
+          teaching, and reflect on my experiences.
         </p>
 
         <div id="blog-list" class="space-y-4"></div>
@@ -178,15 +184,12 @@
     <!-- (Other parts of your HTML remain unchanged) -->
 
     <script>
-      // >>>>>>>>>>>>>>>>> CONFIGURE THESE <<<<<<<<<<<<<<<<<
-      const GITHUB_OWNER = "AymanMahfuz27"; // e.g. 'octocat'
-      const GITHUB_REPO = "principles-first-blog"; // e.g. 'my-blog'
-      const GITHUB_DIR = ""; // if your .md files are in root, leave blank. Otherwise 'blogs'
+      const GITHUB_OWNER = "AymanMahfuz27"; 
+      const GITHUB_REPO = "principles-first-blog"; 
+      const GITHUB_DIR = ""; 
 
-      // We'll store discovered blogs here
       let blogs = [];
 
-      // Toggle sidebar on small screens
       function toggleSidebar() {
         document.getElementById("sidebar").classList.toggle("open");
       }
@@ -211,31 +214,26 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
-        // 1) Load the directory listing from GitHub
         const files = await getFilesFromGithub();
 
-        // 2) Filter for .md
         const mdFiles = files.filter((f) => f.name.endsWith(".md"));
 
-        // 3) For each .md, fetch raw content
         blogs = await Promise.all(mdFiles.map(loadOneBlog));
 
-        // 4) Filter out any null/failed
         blogs = blogs.filter((b) => b !== null);
+        blogs = blogs.filter((b) => !b.title.toLowerCase().includes("archived"));
 
-        // 5) Sort them chronologically by date in filename
+
         blogs.sort((a, b) => {
           // Parse YYYY-MM-DD from the filename
           const dateA = extractDateFromFilename(a.filename);
           const dateB = extractDateFromFilename(b.filename);
-          return dateB - dateA; 
+          return dateB - dateA;
         });
 
-        // 6) Render the UI
         renderAll();
       });
 
-      // Calls the GitHub API to get the list of items in GITHUB_DIR
       async function getFilesFromGithub() {
         const baseUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_DIR}`;
         const resp = await fetch(baseUrl);
@@ -246,7 +244,6 @@
         return resp.json();
       }
 
-      // For each .md file, we get the raw content from `download_url`
       async function loadOneBlog(fileObj) {
         try {
           const contentResp = await fetch(fileObj.download_url);
@@ -276,7 +273,6 @@
         }
       }
 
-      // Extract date from filename (YYYY-MM-DD) and return a Date object
       function extractDateFromFilename(filename) {
         const match = filename.match(/^(\d{4})-(\d{2})-(\d{2})/);
         if (!match) {
@@ -343,7 +339,6 @@
           h2.textContent = b.title;
           card.appendChild(h2);
 
-          // Format and display the date below the title
           const dateDiv = document.createElement("h3");
           dateDiv.className = "text-sm text-gray-400";
           const date = extractDateFromFilename(b.filename);
