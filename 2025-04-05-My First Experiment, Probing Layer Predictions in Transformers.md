@@ -1,96 +1,52 @@
-# My First Experiment: Probing Layer Predictions in Transformers
+## From Intuition to Experiment: I Tried to Find the "Prediction Cascade" in a Real Transformer
 
-In my last post, [An Intuition About Transformers](https://aymanmahfuz27.github.io/principles-first-blog/#), I shared a framework that helped me finally understand how language models like ChatGPT might "build up" intelligence.  
-The key idea was that **prediction forces compression, compression forces abstraction, and abstraction leads to emergent understanding**.
+In my last post, I laid out my "aha!" moment with transformers: the idea that the simple act of next-word prediction, when applied at massive scale, forces a model to build a hierarchy of understanding. In short: **prediction forces compression, compression forces abstraction, and abstraction leads to understanding.**
 
-That framework felt intuitively right. But intuition alone isn’t enough — I wanted to see if I could **find any empirical hints** that this was actually happening inside real transformer models.
+It’s a neat theory, but it’s just that—a theory. As a builder, I can't just leave an idea like that on the whiteboard. I had to see if I could find any evidence of it in the wild. So, I fired up a Google Colab notebook and ran my first-ever experiment to probe the guts of a real transformer.
 
-So, I decided to run a small experiment.  
-Nothing fancy — I was working off minimal compute (just Google Colab) — but I figured that **even a rough first pass would teach me something**.
+My hypothesis was simple. If the layers are building on each other, then the model's ability to predict the next token should get better as we go deeper. An early layer, which is only seeing low-level patterns, should be pretty bad at guessing the final output. A deeper layer, which has access to more abstract and compressed information, should be much better.
 
----
+**The simple hypothesis:** Prediction accuracy should climb with every layer.
 
-## The Experiment
+### The Experiment: A Quick and Dirty Probe
 
-The setup was simple:
+The setup was about as simple as it gets. I took a small, off-the-shelf transformer and attached a tiny "probe" (a linear head) to the output of each layer. This probe's only job was to try and predict the next token based on the information available at its specific layer. Then, I ran some data through the model and measured how well each probe did.
 
-- I took a small transformer model.
-- At each layer, I attached a tiny linear head to predict the next token directly from that layer’s hidden state.
-- Then I measured the prediction accuracy at each layer.
+### The Results: A Confirmation and a Plot Twist
 
-The idea was that if my intuition was right:
-
-- Early layers, which are still working on low-level patterns, should do worse at next-token prediction.
-- Deeper layers, having built up richer semantic abstractions, should do better.
-
-**Simple hypothesis:**  
-→ **Prediction accuracy should improve as we go deeper.**
-
----
-
-## The Results
-
-Here’s the graph from the experiment:
+Here’s the graph of what I found:
 
 ![Prediction Accuracy vs. Layer Depth](./graph.png)
 
-At first glance, the results were encouraging:
+At first, I was thrilled. The graph showed exactly what I hoped to see. From Layer 0 to Layer 3, the accuracy climbs steadily. It was a clear signal that the deeper layers were, in fact, building a more predictive representation of the world. My "prediction cascade" theory was looking good!
 
-- **From Layer 0 to Layer 3**, prediction accuracy **increased very clearly**.
-- It looked like deeper layers were indeed doing a better job at next-token prediction.
+But then, the plot twist. After Layer 3, the curve flattens out. The improvements in prediction accuracy screech to a halt. The deeper layers weren't getting any better at the simple, linear task of next-token prediction.
 
-But then, something interesting happened:
+### What's Going On Here? My Interpretation
 
-- **After around Layer 3, the improvement plateaued.**
-- Later layers didn’t keep getting significantly better — the curve flattened out.
+Did my theory fall apart after Layer 3? I don't think so. In fact, I think this plateau is even more interesting than a continuously climbing line. It suggests that the job of the layers *changes* as you go deeper.
 
----
+My new hypothesis is this:
 
-## Interpreting the Results
+*   **The Early Layers (0-3) are the "Builders."** Their primary job is to take the raw token embeddings and build up the fundamental representations of language. They are forging the raw materials—capturing grammar, syntax, and short-range meaning. In this phase, every new layer directly contributes to a better, more predictive model of the text.
 
-The trend of increasing accuracy across the early layers aligns well with the initial hypothesis: as the model processes information, its internal representations become increasingly predictive of the next token.
+*   **The Deeper Layers (4+) are the "Orchestrators."** Once the foundational representations are built, the model's job shifts. The deeper layers are no longer just building; they are organizing. Their task is more complex and global. They are managing long-range dependencies, resolving ambiguity, maintaining a coherent narrative, and planning what to say next. Their work is less about predicting the very next word in a simple, linear fashion and more about ensuring the entire symphony of the output hangs together.
 
-However, after around **Layer 3**, the improvement begins to taper off.  
-Rather than continuing to climb, the prediction accuracy plateaus, suggesting a shift in the model's internal behavior.
+A simple linear probe is great at measuring the work of the Builders, but it's likely too simple to capture the sophisticated, non-linear work of the Orchestrators. The plateau doesn't mean the deeper layers are failing; it means they're playing a different, more advanced game.
 
-One possible interpretation is that the early layers focus on building **fundamental representations** — capturing local patterns, syntactic structures, and short-range dependencies that are directly useful for token prediction.  
-Once these core abstractions are established — typically by the third layer — the marginal gains in direct prediction ability diminish.
+### Reflections: The Joy of a Messy Experiment
 
-Deeper layers likely begin to specialize in **more complex, global tasks**: maintaining coherence over longer contexts, managing ambiguity, planning future generations, and encoding more abstract semantic information.  
-These tasks may be less immediately useful for direct next-token prediction in a linear sense, but are crucial for higher-quality generation overall.
+This was my first time trying to bridge the gap between a blog post idea and a real-world experiment, and it was a fantastic, messy experience. My setup was far from perfect. I used a small model, I didn't fine-tune my probes extensively, and I was running on free Colab compute.
 
-Thus, while a simple linear probe can capture the growing predictive power in the early layers, it is likely insufficient to capture the richer, more distributed computations happening in the deeper layers.  
-The plateau in accuracy is not necessarily a failure of deeper layers, but rather a reflection of **a transition in the model's priorities** — from local prediction to global organization.
----
+But even with all those caveats, I found a real signal in the noise. The results gave me a small but tangible piece of evidence that supports and refines my initial intuition. And that feels incredible.
 
-## Reflections
+It's a powerful reminder that you don't need a massive lab and a thousand GPUs to start testing your ideas. You just need a question, a bit of code, and the willingness to get your hands dirty.
 
-This was my first time ever trying to bridge the gap between *an idea in my head* and *an experiment in the real world*. And it was a lot messier than I expected.
+### What's Next
 
-- I didn’t fine-tune hyperparameters aggressively.
-- I only had access to limited compute (free Colab).
-- The probe was simple, training was fast and rough — it wasn’t a "careful" paper-quality experiment.
+This little experiment has opened up a dozen new questions for me. I want to try this on larger models, design more sophisticated probes, and analyze how the representations themselves evolve.
 
+For now, I'm excited to share this first step. If you're curious, you can find the (admittedly messy) code and results in the GitHub repo [here](https://github.com/AymanMahfuz27/layer-freezing-gpt-finetune/tree/main).
 
-Even though it’s not bulletproof, it **revealed a real signal**:  
-the early layers of transformers seem to become progressively better at next-token prediction, until a transition point where deeper layers probably start specializing in more complex, global tasks.
-
-That feels like a small but real validation of the intuition I wrote about:  
-**prediction → compression → abstraction → understanding**.
-
----
-
-## What's Next
-
-There’s so much more I could do:
-
-- Try larger models.
-- Use better probes.
-- Analyze multiple datasets.
-- Look at how the representations themselves evolve, not just prediction accuracy.
-
-But for now, I’m happy to share this first experiment.  
-If you're curious about the code or want to dig into the results, you can check out the GitHub repo [here](https://github.com/AymanMahfuz27/layer-freezing-gpt-finetune/tree/main).
-
-Thanks for reading — and if you’re thinking of running your first experiment too, my advice is: **just start**. You’ll learn more from the messiness than from endless planning.
+If you're on the fence about running your own first experiment, take this as your sign. Just start. You'll learn more from the process than you can imagine.
 

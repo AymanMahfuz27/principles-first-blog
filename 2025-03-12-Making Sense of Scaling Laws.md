@@ -1,47 +1,45 @@
-**Rethinking Deep Learning: The Real Constraints and What Truly Pushes It Forward**
+## The Three-Legged Stool of AI Progress: Why "Scaling Laws" Are Only Part of the Story
 
-As I've dived deeper into the foundations of deep learning, I've noticed a pattern that has shifted how I understand what truly limits—and drives—the progress of AI systems. Conventional wisdom often points to "scaling laws" as the definitive explanation, but I believe there's more nuance and structure beneath these laws that we haven't fully appreciated.
+For the longest time, the narrative around AI progress felt a bit like a magic trick. We were told the secret was "scaling laws"—just add more data, more parameters, and more compute, and voilà, better models will appear. And for a while, that seemed to be true. But as I've been digging deeper, that explanation started to feel incomplete. It was like saying the secret to a great cake is just using more flour and sugar, ignoring the importance of the recipe, the quality of the ingredients, and the heat of the oven.
 
-### The Four Fundamental Constraints
+Then came DeepSeek. Here was a model that achieved state-of-the-art results, but seemingly with far less compute than the traditional scaling laws would have predicted. For some, this was a sign that the scaling laws were broken. For me, it was the final clue I needed to build a more complete mental model. DeepSeek didn't break the laws of scaling; it just highlighted that we've been focusing on the wrong parts of the equation.
 
-From my perspective, deep learning progress can be clearly understood through four interconnected constraints. Each of these constraints has subcomponents that must scale in harmony:
+This led me to a new way of thinking about AI progress, which I like to call the **Three-Legged Stool**. For a model to be stable and reach its maximum height (i.e., performance), it needs three legs to be in balance. If one leg is too short, the whole thing wobbles.
 
-1. **Model (Architecture & Parameters)**
-   - **Architecture**: How models are structured (Transformers, CNNs, etc.)
-   - **Parameters**: The size and complexity of the model (number of weights, layers, etc.)
-   - **Optimization and Regularization**: Techniques like AdamW, dropout, weight decay, and LoRA.
+Here are the three legs:
 
-2. **Data (Quality & Quantity)**
-   - **Quantity**: The volume of training data available.
-   - **Quality**: Diversity, representativeness, labeling accuracy, and richness of the data.
+### Leg 1: The Model (The "Recipe")
 
-3. **Compute (Including Efficiency & Energy)**
-   - **Compute Quantity**: Raw computational resources available (GPUs, TPUs, etc.)
-   - **Compute Efficiency**: Algorithmic improvements that extract more performance per unit of compute (e.g., FlashAttention, optimized kernels).
-   - **Energy and Efficiency**: Real-world considerations of energy consumption and the efficiency of resource utilization.
+This isn't just about the number of parameters. It's about the *quality* and *efficiency* of the architecture itself.
+*   **Architecture:** Are we using a Transformer, a CNN, a new hybrid model? The design of the model is the fundamental recipe.
+*   **Parameters:** Yes, the size of the model matters. This is the raw "horsepower."
+*   **Optimization:** This is the secret sauce. Techniques like AdamW, dropout, and clever new methods like LoRA are the difference between a powerful model and a powerful model that can actually be trained effectively.
 
-### Why This Framework Matters
+### Leg 2: The Data (The "Ingredients")
 
-When DeepSeek, a recent high-profile AI model, seemingly achieved frontier results with significantly less compute than traditional scaling laws predicted, some argued this disproved conventional scaling wisdom. In my view, DeepSeek didn't contradict scaling laws—it simply emphasized a critical subconstraint: **compute efficiency**. Architectural innovations allowed DeepSeek to accomplish more with less, underscoring why architecture and compute efficiency deserve equal footing in our mental models of AI scaling.
+We've all heard "garbage in, garbage out." This leg is about the fuel for our models.
+*   **Quantity:** The sheer volume of data is obviously important.
+*   **Quality:** This is the part that I think is becoming increasingly critical. Is the data diverse? Is it clean? Is it representative of the problems we want to solve? A smaller dataset of incredibly high-quality, diverse information can be far more powerful than a massive dataset of internet noise.
 
+### Leg 3: The Compute (The "Oven")
 
-### Toward a Generalized Scaling Law
+This is the raw energy that makes everything happen.
+*   **Raw Power:** How many GPUs or TPUs can you throw at the problem?
+*   **Compute Efficiency:** This is the sub-constraint that DeepSeek brought into the spotlight. Innovations like FlashAttention or optimized kernels are like a convection oven—they allow you to cook faster and more evenly with the same amount of energy. This is a huge force multiplier.
 
-To clarify my thoughts, I've drafted a conceptual mathematical framework to capture these constraints:
+### Putting It All Together: A Back-of-the-Napkin Formula
 
-\[ P_{\text{optimal}} \approx k \cdot (M^{\alpha} \cdot D^{\beta} \cdot C^{\gamma}) \]
+The DeepSeek example fits perfectly into this framework. It didn't have the most "Raw Power" in its compute leg, but it had a massive advantage in "Compute Efficiency" and likely a very strong "Model" leg (a better recipe). This allowed it to stand just as tall as models that were relying on a much longer, brute-force compute leg.
 
-- \(P_{\text{optimal}}\): Optimal achievable model performance (e.g., accuracy, loss).
-- \(M, D, C\): Model, Data, and Compute constraints, respectively.
-- \(\alpha, \beta, \gamma\): Scaling exponents determining relative impact (yet to be empirically derived).
+To crystallize my own thinking, I sketched out a conceptual formula. This isn't a proven law; it's just a tool for my own intuition:
 
-I haven't empirically tested this yet; right now, this formula represents my intuition—an informed guess built from existing research and thoughtful reflection.
+\[ \text{Performance} \approx k \cdot (\text{Model}^{\alpha} \cdot \text{Data}^{\beta} \cdot \text{Compute}^{\gamma}) \]
 
-### Moving Forward
+Here, \(M\), \(D\), and \(C\) represent the "quality" of each of the three legs, not just their raw size. The exponents (\(\alpha, \beta, \gamma\)) represent how much each leg contributes to the final performance, and I suspect their relative importance changes as the whole field evolves.
 
-Even without empirical testing, I believe there's value in sharing these ideas openly. Clearly defining how we think about constraints helps sharpen our intuition, guide practical experimentation, and better allocate resources.
+### Why This Matters to Me
 
-In the future, I hope to empirically test these ideas, even at small scales, to refine and validate this framework. For now, I see this clearly defined conceptual structure as my guiding map—my way of making sense of a rapidly evolving field.
+This framework isn't just an academic exercise. As a builder, it gives me a structured way to think about where the next big breakthroughs will come from. It tells me that we shouldn't just be looking at the teams with the most GPUs. We should be looking at the teams with the most clever architectural tweak, the highest-quality dataset, or the most efficient training algorithm.
 
-Deep learning isn't just about raw compute, data, or parameter count—it's about thoughtfully scaling each constraint, recognizing their interdependence, and continually innovating at the intersection of these fundamental factors.
+It's a reminder that progress in AI isn't a monolithic march of scale. It's a complex, interconnected dance between these three fundamental constraints. And the teams that understand how to balance all three legs of the stool are the ones who will build the future.
 

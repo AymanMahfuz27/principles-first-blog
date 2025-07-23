@@ -1,62 +1,38 @@
-Large language models are getting bigger. They’re getting smarter. And they’re breaking benchmarks faster than we can meaningfully define them. This progress is undeniably impressive, but it's also revealing a deeper issue in how we evaluate intelligence. Every few months, a new benchmark surfaces—sometimes as a reasoning test, a long-context memory task, or a code generation challenge—and for a moment it feels like we’ve found a new ceiling. Then, within weeks, the frontier model surpasses it by a wide margin, and we move on to the next one. This rapid cycle of setting and shattering benchmarks begs a larger question: are we truly measuring intelligence, or are we just iterating over tasks?
+## The Difference Between Feeling and Knowing: A New Benchmark for AI Intelligence
 
-## **Performance Isn't the Full Picture**
+The world of AI is stuck in a cycle. A new, challenging benchmark emerges—a test of reasoning, long-context memory, or complex code generation. For a brief moment, it feels like we've found a true ceiling for our models. Then, within weeks or months, the frontier models shatter it, and we move on to the next one. This relentless pace of progress is incredible, but it's also forcing a deeper question: Are we really measuring intelligence, or are we just getting better at teaching our models to pass tests?
 
-Part of the issue lies in how we define success. Most benchmarks today are geared toward performance metrics: how accurate, how efficient, how human-like a model's outputs are. But intelligence, at least how we understand it in humans, isn’t just about performing well. It’s about understanding. It's about the ability to explain, to reflect, to teach, and to connect abstract concepts in ways that enrich other minds. In that sense, one of the most underexplored yet critical benchmarks in AI might be something we've overlooked: explainability, not just as a transparency tool, but as a core capability of intelligence itself.
+I believe the missing piece is something we've been treating as a secondary goal: **explainability**. Not just as a tool for transparency or safety, but as a core capability of intelligence itself. True understanding isn't just about getting the right answer; it's about being able to explain *why* it's the right answer.
 
-## **The Human Analogy**
+### The Soccer Analogy: The Intuition of a Coming Goal
 
-To ground this idea, I keep going back to a common human experience—watching a soccer game and suddenly having the intuition that a goal is coming.
+To get a feel for what I mean, think about watching a soccer game. Sometimes, you can just *feel* that a goal is coming. The rhythm of the match shifts. The passes connect with a new crispness. The attacking team pins the defenders in their own half, the pressure building like a gathering storm. It's a sense of inevitability that comes from a deep, almost subconscious pattern recognition, built over thousands of hours of watching the game.
 
-You can feel it. The rhythm of the match changes. The midfielders link up one pass after another with a precision they didn’t have just minutes ago. The ball stays pinned in the opponent’s half, ricocheting between players like a growing storm. The defenders are retreating just slightly too much, and the air feels heavier, tighter. It’s a sense of inevitability—not because anyone tells you, not because the score changes, but because the *pattern* has changed. You can feel the tension compressing, about to snap into a goal.
+Most fans have that gut feeling. But very few can articulate the precise tactical shifts that create it—the subtle change in a midfielder's positioning, the way a fullback overlaps to create a 2-vs-1 situation, the fractional delay in a defender's reaction. The person who can not only feel the goal coming but can also explain the geometric and tactical reasons *why* it's coming—that person doesn't just have intuition. They have a deeper understanding.
 
-And yet, when you try to explain it—to put into words why you knew—a blankness appears. It’s not one thing. It’s everything. It’s a latent pattern that your mind has absorbed over thousands of hours of watching the game, compressed into a single gut feeling that defies easy articulation.
+This is the gap I see in our AI systems today. We have built models that have a superhuman "feel" for the game, but we haven't yet taught them how to be expert analysts.
 
-Most fans feel it. Few can articulate it. And the ones who can—the tacticians, the analysts—are the ones who see and understand the underlying geometry, the passing sequences, the spacing collapses that make a goal almost inevitable.
+### From Hand-Crafted Rules to Latent Intuition
 
-This distinction mirrors what we see in AI systems.
+In the early days of AI, we tried to build in understanding from the top down. We hand-crafted value functions for chess programs, telling them explicitly that controlling the center was good and losing your queen was bad. The systems were interpretable, but brittle.
 
-## **Learning to Feel, Not Just Compute**
+Then came the deep learning revolution. Systems like AlphaZero were not given any human-designed rules. They learned through pure self-play, developing a "feel" for the game that was far beyond human comprehension. It was a monumental leap in performance, but it came at the cost of explainability. We had created a genius that couldn't explain its own thoughts.
 
-In the early days of game-playing AI, value functions were handcrafted. In chess, models were told to assign scores based on piece count, control of the center, pawn structure. These were interpretable, symbolic systems with well-understood priorities. But when AlphaZero arrived, it discarded these human priors in favor of learning its own latent value functions through self-play. It began to “feel” the board in ways that were superhuman, evaluating positions with no hard-coded rules. This was a massive leap forward in capability, but it came at the cost of explainability. We had built a system that outperformed us but couldn’t tell us why.
+Today's LLMs are the next step in this evolution. They are trained not on the rules of a game, but on the entirety of human language and knowledge. They compress this vast ocean of data into a high-dimensional latent space, developing an "intuition" about everything from coding patterns to historical analogies. But when we ask them to explain their reasoning, they are often just rationalizing after the fact. They are giving us a plausible story, not a faithful account of the internal computations that led to the answer.
 
-This shift didn’t stop with games.
+### A Benchmark for Scientific Discovery
 
-## **When GPT-3 Brought Ideas to Life**
+This is why I believe the next great benchmark in AI won't be about performance, but about explanation. Imagine an AI that could not only beat the world champion at chess, but could also generate a human-understandable treatise on chess strategy, revealing new principles that humans have missed for centuries.
 
-Today’s large language models, especially in the GPT family, have pushed this principle even further. They aren’t trained to reason explicitly. They’re trained to compress language and ideas into high-dimensional latent spaces. But in doing so, they develop emergent abilities—reasoning, analogizing, planning. When GPT-3 powered the original release of ChatGPT, one of its most impressive and immediately useful traits was its ability to generate analogies. The analogies weren’t always perfect, but they helped people understand difficult topics in simpler terms. That single skill—taking something complex and mapping it to something more familiar—turned ChatGPT into a tool for learning. And that capability has only improved as models have grown more powerful. Today, millions of users rely on LLMs not just to get answers, but to understand them.
+Now, let's scale that idea. Imagine an AI that could not only predict how a protein will fold, but could also explain the underlying biophysical principles in a way that allows us to design new medicines. Imagine an AI that could not only analyze petabytes of cosmological data, but could also articulate a new, testable hypothesis about the nature of dark matter.
 
-We are seeing the beginnings of explainability as a capability.
+If we can build models that can faithfully explain their own compressed, latent understanding of the world, they will become more than just tools. They will become engines of scientific discovery. They will be our collaborators in the quest to understand the universe.
 
-These models are starting to show that they can compress knowledge and then attempt to express that compression in language that humans can understand. But there is still a long way to go. Most of these explanations remain surface-level or post hoc. The model produces a solution and then rationalizes it, rather than giving a faithful account of the reasoning that led to the result. The next step—the benchmark I think we are missing—is to measure how well a model can explain the reasoning it actually used, grounded in its latent computations.
+### Intelligence That Can Be Held to Account
 
-## **A Benchmark That Advances Science**
+In science, a theory isn't accepted just because it's elegant. It must be testable, falsifiable, and built on a foundation of logical reasoning. We demand proofs in mathematics, mechanisms in biology, and equations in physics. We should demand the same rigor from our most advanced AI.
 
-This matters for more than just transparency or safety. It matters for science.
+If a model is to be considered truly intelligent, it must be able to withstand intellectual scrutiny. It must be able to justify its conclusions, not just state them. The ability to compress the world into a useful model is a form of intelligence. But the ability to decompress that model into a communicable, verifiable explanation is a higher form of intelligence still.
 
-If we could get a model like AlphaZero to not only play chess at a superhuman level but to *explain* its internal valuation of the board—to tell us why it favors certain formations or sacrifices—we might uncover patterns in chess that humanity has missed for centuries. We would not just witness brilliance. We would *learn* from it.
-
-And that idea scales.
-
-Imagine the same principle applied to soccer. Imagine if an AI, having absorbed millions of matches, could explain precisely the sequence of spatial dynamics and positional imbalances that signal a goal's imminent arrival, in ways even seasoned coaches had never seen before.
-
-Now take it a step further.
-
-Imagine a model that could compress its understanding of the physical universe and propose a unifying principle that ties together the four fundamental forces of physics. Not just proposing it, but explaining it in a way that passes through the rigors of scientific validation. Imagine it reframing complexity theory, proposing novel insights in cryptography, or even finding proofs to questions that have haunted mathematicians for centuries.
-
-If a model could explain its compressed internal abstractions about the world, the impact would not just be economic. It would be transformational for science itself.
-
-## **Intelligence Must Be Held to Account**
-
-In scientific fields, we demand rigor. A theory isn’t accepted because it sounds plausible—it must be provable, traceable, and logically sound. Mathematics has proofs. Physics has equations. Biology has mechanisms. AI should be no different. If a model claims something is true, we should expect it to explain how and why, not just produce an answer but justify it in terms that hold up to scrutiny. These systems are beginning to form internal abstractions and beliefs. If they are to be called intelligent, they must also be held to the standards of intelligibility.
-
-And if we succeed in building systems that can explain themselves—faithfully, clearly, and deeply—then the payoff will be enormous.
-
-These models will not just automate tasks. They will become collaborators in discovery. Imagine an AI that could explain the latent structure of natural language, or propose a new structure for the Standard Model, or reframe our assumptions about time complexity in algorithms. Imagine not just using AI, but learning from it—because it understands the world differently, and can explain those differences in ways we had not imagined.
-
-## **A Thought Worth Holding**
-
-This is not a research paper. It is a thought—a framing. But it is one I believe is worth pursuing. Because if intelligence is defined only by what a model can do, we will miss the larger opportunity. The ability to compress knowledge is powerful. But the ability to explain that compression—to teach, to illuminate, to reveal what lies underneath—that is something we should be striving for. Not just for alignment. Not just for safety.
-
-Because that is what it means to understand.
+This isn't just about alignment or preventing bad outcomes. It's about fulfilling the deepest promise of AI: to create not just a new kind of mind, but a new partner in our collective search for knowledge. It's about building an intelligence that can not only help us find the answers, but can help us understand them. And that is a goal worth striving for.
 
