@@ -5,8 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Principles, First</title>
 
+    <!-- Tailwind config must be defined before the CDN script -->
+    <script>
+      window.tailwind = window.tailwind || {};
+      tailwind.config = {
+        theme: {
+          extend: {
+            typography: {
+              invert: {
+                css: {
+                  '--tw-prose-links': '#9ecbff',
+                  '--tw-prose-bullets': '#777',
+                },
+              },
+            },
+          },
+        },
+      };
+    </script>
     <!-- Tailwind (CDN) -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography,line-clamp"></script>
 
     <!-- (Optional) Markdown Parser: Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -119,6 +137,14 @@
         color: #1e90ff;
         text-decoration: none;
       }
+
+      /* Reading progress bar */
+      #reading-progress {
+        height: 2px;
+        width: 0%;
+        background: linear-gradient(90deg, #60a5fa, #22d3ee);
+        transition: width 0.1s linear;
+      }
     </style>
   </head>
 
@@ -147,7 +173,7 @@
       <!-- Landing: snippet list -->
       <section
         id="landing-page"
-        class="mx-auto max-w-3xl w-full px-4 py-16 space-y-8"
+        class="mx-auto max-w-4xl w-full px-4 py-16 space-y-8"
       >
         <h1 class="text-4xl font-extrabold mb-4">Principles, First</h1>
         <p class="text-gray-300">
@@ -162,21 +188,91 @@
           teaching, and reflect on my experiences.
         </p>
 
+        <!-- Search -->
+        <div class="pt-2">
+          <label class="sr-only" for="search-input">Search posts</label>
+          <div class="relative">
+            <input
+              id="search-input"
+              type="search"
+              placeholder="Search posts (title or content)"
+              class="w-full bg-[#101010] border border-gray-800 rounded-xl text-sm px-10 py-3 outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 placeholder-gray-500"
+            />
+            <i
+              class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            ></i>
+            <button
+              id="clear-search"
+              class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 px-2 py-1"
+              aria-label="Clear search"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+
         <div id="blog-list" class="space-y-4"></div>
       </section>
 
       <!-- Blog reading area -->
       <section id="blog-content" class="hidden">
         <header
-          class="blog-header sticky top-0 bg-black/80 p-4 border-b border-gray-800 flex flex-col gap-2"
+          class="blog-header sticky top-0 bg-black/80 p-4 border-b border-gray-800 flex flex-col gap-3 z-40"
         >
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <button
+                id="back-button"
+                class="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 transition"
+                aria-label="Back to all posts"
+              >
+                <i class="fas fa-arrow-left"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                id="copy-link-btn"
+                class="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 transition"
+                title="Copy link"
+              >
+                <i class="fas fa-link"></i>
+              </button>
+              <a
+                id="open-raw-btn"
+                href="#"
+                target="_blank"
+                rel="noopener"
+                class="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 transition"
+                title="Open raw markdown"
+              >
+                <i class="fas fa-file-alt"></i>
+              </a>
+            </div>
+          </div>
           <h2 id="blog-title" class="text-2xl font-bold"></h2>
           <p id="blog-meta" class="text-sm text-gray-400"></p>
+          <div class="w-full h-1 bg-gray-800/60 rounded overflow-hidden">
+            <div id="reading-progress"></div>
+          </div>
         </header>
-        <article
-          id="blog-body"
-          class="p-6 prose prose-invert max-w-none mx-auto"
-        ></article>
+
+        <div
+          class="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-8 p-6"
+        >
+          <article
+            id="blog-body"
+            class="prose prose-invert prose-lg lg:prose-xl max-w-none"
+          ></article>
+          <aside
+            id="toc"
+            class="hidden lg:block sticky top-[92px] self-start max-h-[calc(100vh-120px)] overflow-auto p-4 rounded-xl border border-gray-800 bg-black/40"
+          >
+            <h4 class="text-sm uppercase tracking-wider text-gray-400 mb-3">
+              On this page
+            </h4>
+            <nav id="toc-nav" class="text-sm space-y-1"></nav>
+          </aside>
+        </div>
       </section>
     </main>
 
@@ -189,6 +285,8 @@
       const GITHUB_DIR = ""; 
 
       let blogs = [];
+      let filteredBlogs = [];
+      let activeBlogId = null;
 
       function toggleSidebar() {
         document.getElementById("sidebar").classList.toggle("open");
@@ -197,6 +295,11 @@
       function showLandingPage() {
         document.getElementById("blog-content").classList.add("hidden");
         document.getElementById("landing-page").classList.remove("hidden");
+        document.title = "Principles, First";
+        activeBlogId = null;
+        updateActiveSidebarLink();
+        if (location.hash)
+          history.replaceState(null, "", location.pathname + location.search);
       }
 
       function showBlog(blogId) {
@@ -208,9 +311,38 @@
 
         document.getElementById("blog-title").innerText = blog.title;
         // Render with Marked.js for rich Markdown
-        document.getElementById("blog-body").innerHTML = marked.parse(
-          blog.content
-        );
+        marked.setOptions({ headerIds: true, mangle: false });
+        const rendered = marked.parse(blog.content);
+        const bodyEl = document.getElementById("blog-body");
+        bodyEl.innerHTML = rendered;
+
+        // Compute meta (date + reading time)
+        const date = extractDateFromFilename(blog.filename);
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const month = date.toLocaleString("default", { month: "long" });
+        document.getElementById("blog-meta").innerText = `${month} ${getOrdinalSuffix(
+          day
+        )}, ${year} • ${blog.readingTime} min read`;
+
+        // Build TOC and ensure heading IDs
+        buildTableOfContents();
+
+        // Reading progress reset
+        updateReadingProgress(0);
+
+        // Actions
+        const rawBtn = document.getElementById("open-raw-btn");
+        rawBtn.href = blog.rawUrl;
+        activeBlogId = blogId;
+        updateActiveSidebarLink();
+
+        // Update URL and title
+        const hash = encodeURIComponent(blogId);
+        if (location.hash !== `#${hash}`) {
+          history.replaceState(null, "", `#${hash}`);
+        }
+        document.title = `${blog.title} – Principles, First`;
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
@@ -231,7 +363,67 @@
           return dateB - dateA;
         });
 
+        filteredBlogs = blogs.slice();
         renderAll();
+
+        // Search interactions
+        const searchInput = document.getElementById("search-input");
+        const clearBtn = document.getElementById("clear-search");
+        function handleSearch() {
+          const q = (searchInput.value || "").toLowerCase().trim();
+          clearBtn.classList.toggle("hidden", q.length === 0);
+          if (!q) {
+            filteredBlogs = blogs.slice();
+          } else {
+            filteredBlogs = blogs.filter((b) =>
+              (b.title + "\n" + b.content).toLowerCase().includes(q)
+            );
+          }
+          renderAll();
+        }
+        if (searchInput) {
+          searchInput.addEventListener("input", handleSearch);
+        }
+        if (clearBtn) {
+          clearBtn.addEventListener("click", () => {
+            searchInput.value = "";
+            handleSearch();
+          });
+        }
+
+        // Back button and actions
+        const backBtn = document.getElementById("back-button");
+        if (backBtn) backBtn.addEventListener("click", showLandingPage);
+        const copyBtn = document.getElementById("copy-link-btn");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(location.href);
+              copyBtn.classList.add("ring-1", "ring-sky-500/50");
+              setTimeout(() =>
+                copyBtn.classList.remove("ring-1", "ring-sky-500/50"),
+              500);
+            } catch (e) {
+              console.error(e);
+            }
+          });
+        }
+
+        // Reading progress listener
+        window.addEventListener("scroll", () => requestAnimationFrame(updateReadingProgress));
+        window.addEventListener("resize", () => requestAnimationFrame(updateReadingProgress));
+
+        // Deep link routing
+        function handleRouteFromHash() {
+          const hash = decodeURIComponent(location.hash.replace(/^#/, ""));
+          if (hash) {
+            showBlog(hash);
+          } else {
+            showLandingPage();
+          }
+        }
+        window.addEventListener("hashchange", handleRouteFromHash);
+        handleRouteFromHash();
       });
 
       async function getFilesFromGithub() {
@@ -260,12 +452,16 @@
             ""
           );
           const snippet = text.length > 80 ? text.slice(0, 80) + "..." : text;
+          const words = text.trim().split(/\s+/).length;
+          const readingTime = Math.max(1, Math.round(words / 200));
           return {
             id: fileObj.name,
             filename: fileObj.name,
             title: nameSansDate,
             content: text.trim(),
             snippet: snippet.trim(),
+            readingTime,
+            rawUrl: fileObj.download_url,
           };
         } catch (e) {
           console.error(e);
@@ -321,7 +517,12 @@
           const a = document.createElement("a");
           a.href = "#";
           a.textContent = b.title;
-          a.onclick = () => showBlog(b.id);
+          a.onclick = () => {
+            showBlog(b.id);
+            // Close sidebar on mobile after navigation
+            document.getElementById("sidebar").classList.remove("open");
+          };
+          a.dataset.blogId = b.id;
           li.appendChild(a);
           sidebarDiv.appendChild(li);
         });
@@ -329,13 +530,21 @@
         // Main snippet listing
         const blogListDiv = document.getElementById("blog-list");
         blogListDiv.innerHTML = "";
-        blogs.forEach((b) => {
+        const list = filteredBlogs.length ? filteredBlogs : blogs;
+        if (list.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "text-gray-400 text-sm";
+          empty.textContent = "No posts match your search.";
+          blogListDiv.appendChild(empty);
+          return;
+        }
+        list.forEach((b) => {
           const card = document.createElement("article");
           card.className =
-            "bg-[#151515] rounded-lg p-6 shadow hover:shadow-lg transition-transform hover:-translate-y-1";
+            "bg-[#141414] rounded-xl p-6 border border-gray-800/60 shadow-sm hover:shadow-lg transition transform hover:-translate-y-0.5";
 
           const h2 = document.createElement("h2");
-          h2.className = "text-xl font-bold";
+          h2.className = "text-xl font-bold tracking-tight";
           h2.textContent = b.title;
           card.appendChild(h2);
 
@@ -345,18 +554,83 @@
           const day = date.getDate();
           const year = date.getFullYear();
           const month = date.toLocaleString("default", { month: "long" });
-          dateDiv.textContent = `${month} ${getOrdinalSuffix(day)}, ${year}`;
+          dateDiv.textContent = `${month} ${getOrdinalSuffix(day)}, ${year} • ${b.readingTime} min read`;
           card.appendChild(dateDiv);
+
+          const preview = document.createElement("p");
+          preview.className = "mt-3 text-gray-300 leading-relaxed line-clamp-3";
+          preview.textContent = b.snippet;
+          card.appendChild(preview);
 
           const btn = document.createElement("button");
           btn.className =
-            "mt-4 px-3 py-1 bg-gray-800 hover:bg-gray-700 rounded-lg";
+            "mt-4 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-lg";
           btn.textContent = "Read More";
           btn.onclick = () => showBlog(b.id);
           card.appendChild(btn);
 
           blogListDiv.appendChild(card);
         });
+
+        updateActiveSidebarLink();
+      }
+
+      function updateActiveSidebarLink() {
+        const links = document.querySelectorAll('#sidebar-blogs a');
+        links.forEach((a) => {
+          if (a.dataset.blogId === activeBlogId) {
+            a.classList.add('text-sky-300');
+          } else {
+            a.classList.remove('text-sky-300');
+          }
+        });
+      }
+
+      function slugify(text) {
+        return text
+          .toString()
+          .toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-');
+      }
+
+      function buildTableOfContents() {
+        const container = document.getElementById('blog-body');
+        const nav = document.getElementById('toc-nav');
+        if (!container || !nav) return;
+        nav.innerHTML = '';
+        const headings = container.querySelectorAll('h2, h3');
+        headings.forEach((h) => {
+          if (!h.id) {
+            h.id = slugify(h.textContent || 'section');
+          }
+          const link = document.createElement('a');
+          link.href = `#${h.id}`;
+          link.textContent = h.textContent || '';
+          link.className = 'block px-2 py-1 rounded hover:bg-gray-800/60 transition';
+          if (h.tagName.toLowerCase() === 'h3') {
+            link.className += ' ml-4 text-gray-300';
+          }
+          nav.appendChild(link);
+        });
+      }
+
+      function updateReadingProgress(forcePercent) {
+        const bar = document.getElementById('reading-progress');
+        if (!bar) return;
+        if (typeof forcePercent === 'number') {
+          bar.style.width = `${Math.max(0, Math.min(100, forcePercent))}%`;
+          return;
+        }
+        const article = document.getElementById('blog-body');
+        if (!article) return;
+        const rectTop = article.getBoundingClientRect().top + window.scrollY;
+        const total = article.offsetHeight - window.innerHeight;
+        const scrolled = window.scrollY - rectTop;
+        const pct = total > 0 ? (scrolled / total) * 100 : 0;
+        bar.style.width = `${Math.max(0, Math.min(100, pct))}%`;
       }
     </script>
   </body>

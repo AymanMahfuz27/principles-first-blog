@@ -36,7 +36,7 @@ Self-discipline simplifies in the same way. The goal is not to copy someone’s 
 Make it a habit to ask three questions whenever you face a new topic. What are the valid outcomes here. What never changes when solutions are good. What can I vary to move results in predictable ways. Then compress your answer into one or two sentences. If you can explain the manifold simply and it predicts what happens in fresh examples, you have it. If your explanation collapses as soon as you switch contexts, you do not.
 
 
-## A case study, explain Arm's business and history to my dad
+## A case study, explaining Arm's business and history to my dad
 
 Not long ago, my dad was looking into a product manager role at Arm. He didn’t have a semiconductor background, so when he started researching, he got lost in a sea of buzzwords: SoCs, chiplets, IoT platforms, server CPUs, AI acceleration, infrastructure systems. Arm seemed to be doing everything at once.
 
