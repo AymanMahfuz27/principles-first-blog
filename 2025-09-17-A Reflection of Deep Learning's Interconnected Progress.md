@@ -1,0 +1,18 @@
+# Built on the Shoulders of Giants: A Reflection on Deep Learning’s Interconnected Progress
+
+When I think about deep learning as a field, one thing that strikes me is how uneven progress can feel. For years, new ideas seemed like isolated one-off inventions. Batch normalization made optimization easier. Residual connections let us train deeper networks. Layer normalization stabilized sequence models. Each one was clever and useful, but also kind of self-contained. You could pick up the paper, drop it into your model, and it worked. But they didn’t obviously connect to each other in a way that screamed paradigm shift.
+
+Then the Transformer arrived. Everyone points to attention, but attention wasn’t new. Attention alone wouldn’t have made the model work. The Transformer depended on residuals and normalization just as much. Without them, it would collapse in training or fail to scale in depth. What makes the Transformer the best invention of deep learning is not attention by itself, but the way it pulled together prior breakthroughs into one coherent structure.
+
+This realization hit me hard as I studied the Transformer in two classes this semester: Generative Visual Computing (how models like ChatGPT make pictures) and Natural Language Processing. The more I revisit the paper, the more I see it as a synthesis of the field’s history, not just a single discovery. That perspective makes me feel cozy, proud, and deeply curious. Cozy, because it reminds me that every advance is part of a lineage. Proud, because I get to study this lineage in real time. Curious, because it makes me wonder what the next synthesis will be.
+
+That curiosity leads me to notice how ideas don’t stay locked in one corner of the field. They spread, mutate, and return in new forms. The same normalization principles show up in vision, language, and reinforcement learning. Residual connections show up not only in ResNets but also in iterative reasoning and fine-tuning adapters. Once an idea proves itself, it tends to echo across domains.
+
+Right now, one of the most interesting echoes at frontier labs like OpenAI is the rise of “universal verifiers.” A universal verifier is a model that checks or grades the outputs of a reasoning model. It doesn’t just generate; it judges. By reranking candidates, catching wrong steps, or deciding when refinement is needed, verifiers act as quality control. This is critical because reasoning models are often over-confident or subtly wrong. Early experiments already show that verifiers can boost math proofs, commonsense reasoning, and long-chain logic. 
+
+But the verifier pattern isn’t new either. GANs are built on a generator and a discriminator. For my research in robot soccer, we use MAPPO to train the robots to behave as multi-agent swarms, and we pair multiple actor networks with a central critic. All these are examples of a verifier, in vastly different areas of deep learning. Across subfields, we keep rediscovering that having a second component to judge, coordinate, or refine can unlock whole new capabilities.
+
+The Transformer showed me that breakthroughs come from recombination. Residuals, normalization, attention—none of them alone gave us the leap, but together they did. Verifiers may play the same role in reasoning. MARL may do the same for robotics. The next paradigm shift will likely look obvious in hindsight, but only because it will have woven together threads that already exist today.
+
+That’s the real story of deep learning to me. Not isolated sparks, but a web of insights, building on each other, feeding across domains, carrying us toward the unknown.
+
