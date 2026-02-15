@@ -1,4 +1,5 @@
 # When the “Clean Circuit” Disappears: What I Learned Reverse-Engineering Tool-Calling in GPT-2
+Check out the repo at : https://github.com/AymanMahfuz27/tool_call_mech_interp
 
 For the last few days, I’ve been running a mechanistic interpretability project on a question that matters a lot for modern agentic systems:
 
