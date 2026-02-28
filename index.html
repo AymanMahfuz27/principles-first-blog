@@ -753,8 +753,7 @@
         <ul>
           <li><a href="#" onclick="showLandingPage()" id="home-link">All posts</a></li>
         </ul>
-        <div class="sidebar-section-label">Writing</div>
-        <ul id="sidebar-blogs"></ul>
+        <div id="sidebar-dynamic"></div>
       </div>
 
       <div class="sidebar-footer">
@@ -882,15 +881,15 @@
         "2025-04-10-How Paranoia Made Me a Better Engineer.md": "Personal",
         "2025-04-26-Compression Without Comprehension, Rethinking AI Intelligence Through Explainability.md": "Theory",
         "2025-04-28-At the Mercy of the Prompt.md": "AI Systems",
-        "2025-07-21-Summer 2025, Pt 1, My Internship at ARM.md": "Personal",
-        "2025-07-21-Summer 2025, Pt 2, Robot Soccer.md": "Projects",
+        "2025-07-21-Summer 2025, Pt 1, My Internship at ARM.md": "Experiences & Projects",
+        "2025-07-21-Summer 2025, Pt 2, Robot Soccer.md": "Experiences & Projects",
         "2025-09-17-A Reflection of Deep Learning's Interconnected Progress.md": "Theory",
         "2026-02-15-When the \"Clean Circuit\" Disappears: What I Learned Reverse-Engineering Tool-Calling in GPT-2.md": "Research",
-        "2026-02-27-I trained a neural net to sort my TikTok saves.md": "Projects",
+        "2026-02-27-I trained a neural net to sort my TikTok saves.md": "Experiences & Projects",
         "2026-02-27-I tried to make LLM compaction safer. It didn't work. Here's what I learned.md": "Research",
       };
 
-      const CATEGORIES = ["All", "Research", "Theory", "AI Systems", "Projects", "Personal"];
+      const CATEGORIES = ["All", "Research", "Theory", "AI Systems", "Experiences & Projects", "Personal"];
 
       let blogs         = [];
       let filteredBlogs = [];
@@ -1106,11 +1105,8 @@
       /* ── Render ───────────────────────── */
       function renderAll() {
         /* Sidebar links — grouped by category */
-        const sidebarScroll = document.getElementById("sidebar-blogs").parentElement;
-        // Remove all old dynamic content (everything after the Navigate section)
-        const staticUl = sidebarScroll.querySelector("ul");
-        let toRemove = staticUl ? staticUl.nextSibling : null;
-        while (toRemove) { const next = toRemove.nextSibling; sidebarScroll.removeChild(toRemove); toRemove = next; }
+        const sidebarDynamic = document.getElementById("sidebar-dynamic");
+        sidebarDynamic.innerHTML = "";
 
         const grouped = {};
         CATEGORIES.filter(c => c !== "All").forEach(c => grouped[c] = []);
@@ -1124,7 +1120,7 @@
           const label = document.createElement("div");
           label.className = "sidebar-section-label";
           label.textContent = cat;
-          sidebarScroll.appendChild(label);
+          sidebarDynamic.appendChild(label);
           const ul = document.createElement("ul");
           grouped[cat].forEach(b => {
             const li = document.createElement("li");
@@ -1133,7 +1129,7 @@
             a.onclick = () => { showBlog(b.id); document.getElementById("sidebar").classList.remove("open"); };
             li.appendChild(a); ul.appendChild(li);
           });
-          sidebarScroll.appendChild(ul);
+          sidebarDynamic.appendChild(ul);
         });
 
         /* Apply search + category filter */
@@ -1216,7 +1212,7 @@
       }
 
       function updateActiveSidebarLink() {
-        document.querySelectorAll(".sidebar-scroll a[data-blog-id]").forEach(a => {
+        document.querySelectorAll("#sidebar-dynamic a[data-blog-id]").forEach(a => {
           a.classList.toggle("active", a.dataset.blogId === activeBlogId);
         });
       }
