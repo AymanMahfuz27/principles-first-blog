@@ -684,6 +684,34 @@
       .prose-custom table { font-size: 0.9rem !important; }
       .prose-custom thead th { color: #9ca3af !important; font-weight: 600 !important; }
 
+      /* Category tabs */
+      .category-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 1.25rem;
+      }
+      .category-tab {
+        padding: 0.28rem 0.75rem;
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,0.07);
+        background: transparent;
+        color: #374151;
+        font-size: 0.72rem;
+        font-weight: 600;
+        font-family: "Manrope", sans-serif;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s;
+        letter-spacing: 0.01em;
+        outline: none;
+      }
+      .category-tab:hover { color: #6b7280; border-color: rgba(255,255,255,0.12); }
+      .category-tab.active {
+        color: #7ab5d4;
+        border-color: rgba(74,127,165,0.4);
+        background: rgba(74,127,165,0.08);
+      }
+
       /* Animations */
       @keyframes fadeUp {
         from { opacity: 0; transform: translateY(14px); }
@@ -784,6 +812,7 @@
 
           <!-- Post list -->
           <div class="fade-up delay-2">
+            <div id="category-tabs" class="category-tabs"></div>
             <div class="posts-header">
               <span class="posts-label">Writing</span>
               <span class="post-count-badge" id="post-count"></span>
@@ -845,9 +874,28 @@
       const GITHUB_REPO  = "principles-first-blog";
       const GITHUB_DIR   = "";
 
-      let blogs        = [];
+      // Map filename → category
+      const POST_CATEGORIES = {
+        "2025-02-20-Towards Tiki-Taka The Power of Active Waiting in MultiAgent AI.md": "AI Systems",
+        "2025-03-12-Making Sense of Scaling Laws.md": "Theory",
+        "2025-04-10-A New Layer of Understanding of Deep Learning with Solomonoff Induction and What it Might Mean for AI.md": "Theory",
+        "2025-04-10-How Paranoia Made Me a Better Engineer.md": "Personal",
+        "2025-04-26-Compression Without Comprehension, Rethinking AI Intelligence Through Explainability.md": "Theory",
+        "2025-04-28-At the Mercy of the Prompt.md": "AI Systems",
+        "2025-07-21-Summer 2025, Pt 1, My Internship at ARM.md": "Personal",
+        "2025-07-21-Summer 2025, Pt 2, Robot Soccer.md": "Projects",
+        "2025-09-17-A Reflection of Deep Learning's Interconnected Progress.md": "Theory",
+        "2026-02-15-When the \"Clean Circuit\" Disappears: What I Learned Reverse-Engineering Tool-Calling in GPT-2.md": "Research",
+        "2026-02-27-I trained a neural net to sort my TikTok saves.md": "Projects",
+        "2026-02-27-I tried to make LLM compaction safer. It didn't work. Here's what I learned.md": "Research",
+      };
+
+      const CATEGORIES = ["All", "Research", "Theory", "AI Systems", "Projects", "Personal"];
+
+      let blogs         = [];
       let filteredBlogs = [];
       let activeBlogId  = null;
+      let activeCategory = null;
 
       /* ── Sidebar ──────────────────────── */
       function toggleSidebar() {
@@ -924,6 +972,7 @@
         blogs.sort((a, b) => extractDateFromFilename(b.filename) - extractDateFromFilename(a.filename));
 
         filteredBlogs = blogs.slice();
+        buildCategoryTabs();
         renderAll();
 
         /* Search */
@@ -1035,33 +1084,70 @@
         }
       }
 
+      /* ── Category tabs ────────────────── */
+      function buildCategoryTabs() {
+        const tabsEl = document.getElementById("category-tabs");
+        if (!tabsEl) return;
+        tabsEl.innerHTML = "";
+        CATEGORIES.forEach(cat => {
+          const btn = document.createElement("button");
+          btn.textContent = cat;
+          btn.className   = "category-tab" + (cat === "All" ? " active" : "");
+          btn.onclick = () => {
+            activeCategory = cat === "All" ? null : cat;
+            document.querySelectorAll(".category-tab").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            renderAll();
+          };
+          tabsEl.appendChild(btn);
+        });
+      }
+
       /* ── Render ───────────────────────── */
       function renderAll() {
-        /* Sidebar links */
-        const sidebarDiv = document.getElementById("sidebar-blogs");
-        sidebarDiv.innerHTML = "";
+        /* Sidebar links — grouped by category */
+        const sidebarScroll = document.getElementById("sidebar-blogs").parentElement;
+        // Remove all old dynamic content (everything after the Navigate section)
+        const staticUl = sidebarScroll.querySelector("ul");
+        let toRemove = staticUl ? staticUl.nextSibling : null;
+        while (toRemove) { const next = toRemove.nextSibling; sidebarScroll.removeChild(toRemove); toRemove = next; }
+
+        const grouped = {};
+        CATEGORIES.filter(c => c !== "All").forEach(c => grouped[c] = []);
         blogs.forEach(b => {
-          const li = document.createElement("li");
-          const a  = document.createElement("a");
-          a.href          = "#";
-          a.textContent   = b.title;
-          a.dataset.blogId = b.id;
-          a.onclick = () => {
-            showBlog(b.id);
-            document.getElementById("sidebar").classList.remove("open");
-          };
-          li.appendChild(a);
-          sidebarDiv.appendChild(li);
+          const cat = POST_CATEGORIES[b.filename] || "Personal";
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(b);
         });
+        CATEGORIES.filter(c => c !== "All").forEach(cat => {
+          if (!grouped[cat] || grouped[cat].length === 0) return;
+          const label = document.createElement("div");
+          label.className = "sidebar-section-label";
+          label.textContent = cat;
+          sidebarScroll.appendChild(label);
+          const ul = document.createElement("ul");
+          grouped[cat].forEach(b => {
+            const li = document.createElement("li");
+            const a  = document.createElement("a");
+            a.href = "#"; a.textContent = b.title; a.dataset.blogId = b.id;
+            a.onclick = () => { showBlog(b.id); document.getElementById("sidebar").classList.remove("open"); };
+            li.appendChild(a); ul.appendChild(li);
+          });
+          sidebarScroll.appendChild(ul);
+        });
+
+        /* Apply search + category filter */
+        const list = filteredBlogs.filter(b =>
+          !activeCategory || (POST_CATEGORIES[b.filename] === activeCategory)
+        );
 
         /* Post count */
         const countEl = document.getElementById("post-count");
-        if (countEl) countEl.textContent = `${filteredBlogs.length} post${filteredBlogs.length !== 1 ? "s" : ""}`;
+        if (countEl) countEl.textContent = `${list.length} post${list.length !== 1 ? "s" : ""}`;
 
         /* Card list */
         const listDiv = document.getElementById("blog-list");
         listDiv.innerHTML = "";
-        const list = filteredBlogs;
 
         if (list.length === 0) {
           const empty = document.createElement("div");
@@ -1072,7 +1158,27 @@
           return;
         }
 
-        list.forEach((b, i) => {
+        // Show category label above cards when not filtering by category
+        if (!activeCategory) {
+          // Group cards by category, show section labels
+          const categoryOrder = CATEGORIES.filter(c => c !== "All");
+          categoryOrder.forEach(cat => {
+            const catPosts = list.filter(b => (POST_CATEGORIES[b.filename] || "Personal") === cat);
+            if (catPosts.length === 0) return;
+            const header = document.createElement("div");
+            header.style.cssText = "font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#374151;margin:1.5rem 0 0.6rem;font-family:'Manrope',sans-serif;";
+            header.textContent = cat;
+            listDiv.appendChild(header);
+            catPosts.forEach((b, i) => appendCard(listDiv, b, i === 0 && cat === categoryOrder[0]));
+          });
+        } else {
+          list.forEach((b, i) => appendCard(listDiv, b, i === 0));
+        }
+
+        updateActiveSidebarLink();
+      }
+
+      function appendCard(listDiv, b, isFirst) {
           const card = document.createElement("div");
           card.className = "post-card";
           card.onclick   = () => showBlog(b.id);
@@ -1085,7 +1191,7 @@
           card.innerHTML = `
             <div class="post-card-inner">
               <div class="post-card-body">
-                ${i === 0 ? '<div class="post-latest-tag"><i class="fas fa-circle" style="font-size:0.45rem;"></i> Latest</div>' : ""}
+                ${isFirst ? '<div class="post-latest-tag"><i class="fas fa-circle" style="font-size:0.45rem;"></i> Latest</div>' : ""}
                 <p class="post-title">${escHtml(b.title)}</p>
                 <div class="post-meta">
                   <span class="post-date">${month} ${getOrdinalSuffix(day)}, ${year}</span>
@@ -1099,9 +1205,6 @@
           `;
 
           listDiv.appendChild(card);
-        });
-
-        updateActiveSidebarLink();
       }
 
       function escHtml(str) {
@@ -1113,7 +1216,7 @@
       }
 
       function updateActiveSidebarLink() {
-        document.querySelectorAll("#sidebar-blogs a").forEach(a => {
+        document.querySelectorAll(".sidebar-scroll a[data-blog-id]").forEach(a => {
           a.classList.toggle("active", a.dataset.blogId === activeBlogId);
         });
       }
