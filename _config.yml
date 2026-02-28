@@ -1,0 +1,5 @@
+exclude:
+  - "2025-*.md"
+  - "2026-*.md"
+  - "graph.png"
+  - "README.md"
