@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Principles, First</title>
+    <meta name="description" content="Deep learning, AI systems, and building intuition through writing. By Ayman Mahfuz." />
 
-    <!-- Tailwind config must be defined before the CDN script -->
     <script>
       window.tailwind = window.tailwind || {};
       tailwind.config = {
@@ -14,8 +14,20 @@
             typography: {
               invert: {
                 css: {
-                  '--tw-prose-links': '#9ecbff',
-                  '--tw-prose-bullets': '#777',
+                  '--tw-prose-links': '#818cf8',
+                  '--tw-prose-bullets': '#4b5563',
+                  '--tw-prose-headings': '#f1f5f9',
+                  '--tw-prose-body': '#9ca3af',
+                  '--tw-prose-lead': '#6b7280',
+                  '--tw-prose-bold': '#e5e7eb',
+                  '--tw-prose-counters': '#6366f1',
+                  '--tw-prose-hr': 'rgba(255,255,255,0.07)',
+                  '--tw-prose-quotes': '#9ca3af',
+                  '--tw-prose-quote-borders': '#6366f1',
+                  '--tw-prose-code': '#a5f3fc',
+                  '--tw-prose-pre-bg': '#0c0d0f',
+                  '--tw-prose-th-borders': 'rgba(255,255,255,0.1)',
+                  '--tw-prose-td-borders': 'rgba(255,255,255,0.06)',
                 },
               },
             },
@@ -23,275 +35,820 @@
         },
       };
     </script>
-    <!-- Tailwind (CDN) -->
     <script src="https://cdn.tailwindcss.com?plugins=typography,line-clamp"></script>
-
-    <!-- (Optional) Markdown Parser: Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-    <!-- Fonts & Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
 
     <style>
+      *, *::before, *::after { box-sizing: border-box; }
+
       html {
         font-family: "Manrope", sans-serif;
         scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
+
       body {
         margin: 0;
         padding: 0;
-        /* Example gradient reminiscent of OpenAI's style */
-        background: radial-gradient(75rem circle at 30% 50%, #0c0c0c, #000 40%);
-        color: #fff;
+        background-color: #07080a;
+        color: #9ca3af;
+        min-height: 100vh;
       }
 
-      /* Sidebar toggle for mobile */
+      /* Subtle ambient depth */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(ellipse 80% 55% at 12% 0%, rgba(99,102,241,0.055) 0%, transparent 60%),
+          radial-gradient(ellipse 55% 40% at 88% 95%, rgba(139,92,246,0.04) 0%, transparent 55%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── Sidebar toggle (mobile) ─────────────────────────── */
       .nav-toggle {
         position: fixed;
         top: 1rem;
         left: 1rem;
-        font-size: 1.5rem;
-        color: #fff;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        color: #6b7280;
         cursor: pointer;
-        z-index: 1000;
-        display: block;
+        z-index: 1001;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        transition: background 0.2s, color 0.2s;
       }
-      @media (min-width: 1024px) {
-        .nav-toggle {
-          display: none;
-        }
-      }
+      .nav-toggle:hover { background: rgba(255,255,255,0.09); color: #e5e7eb; }
+      @media (min-width: 1024px) { .nav-toggle { display: none; } }
 
-      /* Sidebar */
+      /* ── Sidebar ─────────────────────────────────────────── */
       #sidebar {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 220px;
+        top: 0; left: 0;
+        width: 240px;
         height: 100vh;
-        background-color: #000;
-        border-right: 1px solid #333;
-        padding: 2rem;
-        overflow-y: auto;
-        box-sizing: border-box;
+        background: rgba(5,6,8,0.98);
+        border-right: 1px solid rgba(255,255,255,0.055);
+        display: flex;
+        flex-direction: column;
         z-index: 999;
         transform: translateX(-100%);
-        transition: transform 0.3s ease;
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+        overflow: hidden;
       }
-      #sidebar.open {
-        transform: translateX(0);
+      #sidebar.open { transform: translateX(0); }
+      @media (min-width: 1024px) { #sidebar { transform: translateX(0); } }
+
+      /* Sidebar brand */
+      .sidebar-brand {
+        padding: 1.75rem 1.5rem 1.25rem;
+        border-bottom: 1px solid rgba(255,255,255,0.055);
+        flex-shrink: 0;
       }
-      @media (min-width: 1024px) {
-        #sidebar {
-          transform: translateX(0);
-        }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        text-decoration: none;
+        cursor: pointer;
+        margin-bottom: 0.2rem;
       }
-      #sidebar ul {
-        list-style-type: none;
-        padding: 0;
+      .sidebar-logo-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        flex-shrink: 0;
+      }
+      .sidebar-brand-name {
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: #d1d5db;
         margin: 0;
       }
-      #sidebar li {
-        margin-bottom: 1.2rem;
-      }
-      #sidebar li a {
-        color: #fff;
-        text-decoration: none;
+      .sidebar-brand-sub {
+        font-size: 0.7rem;
+        color: #374151;
+        margin: 0;
+        padding-left: 1.1rem;
         font-weight: 500;
       }
-      #sidebar li a:hover {
-        color: #bbb;
-      }
 
-      /* Main content margin on large screens for sidebar */
+      /* Sidebar nav */
+      .sidebar-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 0.75rem;
+      }
+      .sidebar-scroll::-webkit-scrollbar { width: 3px; }
+      .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 4px; }
+
+      .sidebar-section-label {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #1f2937;
+        padding: 0 0.6rem;
+        margin: 0.25rem 0 0.4rem;
+      }
+      #sidebar ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+      #sidebar li { margin-bottom: 1px; }
+      #sidebar li a {
+        display: block;
+        color: #4b5563;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.78rem;
+        padding: 0.38rem 0.6rem;
+        border-radius: 6px;
+        transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.4;
+      }
+      #sidebar li a:hover { color: #d1d5db; background: rgba(255,255,255,0.04); }
+      #sidebar li a.active { color: #818cf8; background: rgba(99,102,241,0.1); }
+
+      /* Sidebar footer */
+      .sidebar-footer {
+        padding: 0.875rem 1.25rem;
+        border-top: 1px solid rgba(255,255,255,0.055);
+        flex-shrink: 0;
+      }
+      .sidebar-footer a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.73rem;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .sidebar-footer a:hover { color: #6b7280; }
+
+      /* ── Main ────────────────────────────────────────────── */
       main {
         margin-left: 0;
         transition: margin-left 0.3s ease;
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+      }
+      @media (min-width: 1024px) { main { margin-left: 240px; } }
+
+      /* ── Landing ─────────────────────────────────────────── */
+      .landing-inner {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 4.5rem 2rem 5rem;
+      }
+
+      /* Author chip */
+      .author-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.28rem 0.75rem 0.28rem 0.28rem;
+        border-radius: 100px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.025);
+        margin-bottom: 2.25rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: border-color 0.25s, background 0.25s;
+      }
+      .author-chip:hover {
+        border-color: rgba(99,102,241,0.35);
+        background: rgba(99,102,241,0.06);
+      }
+      .author-avatar {
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.6rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: 0.02em;
+        flex-shrink: 0;
+      }
+      .author-chip-text {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: #6b7280;
+        letter-spacing: 0.01em;
+      }
+      .author-chip-arrow {
+        font-size: 0.6rem;
+        color: #374151;
+        margin-left: 0.1rem;
+      }
+
+      /* Blog headline */
+      .blog-headline {
+        font-size: clamp(2.4rem, 6vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        line-height: 1.05;
+        color: #f9fafb;
+        margin: 0 0 1.25rem;
+      }
+      .blog-headline-accent {
+        background: linear-gradient(125deg, #818cf8 0%, #a78bfa 50%, #818cf8 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 6s linear infinite;
+      }
+      @keyframes shimmer {
+        0% { background-position: 0% center; }
+        100% { background-position: 200% center; }
+      }
+
+      .blog-tagline {
+        font-size: 1.05rem;
+        line-height: 1.75;
+        color: #4b5563;
+        margin: 0 0 2.75rem;
+        max-width: 560px;
+      }
+
+      /* Divider */
+      .section-divider {
+        height: 1px;
+        background: rgba(255,255,255,0.06);
+        margin: 0 0 2rem;
+      }
+
+      /* Search */
+      .search-wrap { position: relative; margin-bottom: 1.75rem; }
+      .search-input {
+        width: 100%;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 10px;
+        color: #e5e7eb;
+        font-size: 0.875rem;
+        font-family: "Manrope", sans-serif;
+        padding: 0.65rem 2.4rem 0.65rem 2.6rem;
+        outline: none;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      }
+      .search-input::placeholder { color: #2d3748; }
+      .search-input:focus {
+        border-color: rgba(99,102,241,0.35);
+        background: rgba(99,102,241,0.035);
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.07);
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2d3748;
+        font-size: 0.75rem;
+      }
+      .search-clear {
+        position: absolute;
+        right: 0.4rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #374151;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        transition: color 0.15s;
+        display: none;
+      }
+      .search-clear:hover { color: #9ca3af; }
+      .search-clear.visible { display: block; }
+
+      /* Posts header */
+      .posts-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.875rem;
+      }
+      .posts-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #1f2937;
+      }
+      .post-count-badge {
+        font-size: 0.68rem;
+        color: #374151;
+        font-weight: 500;
+      }
+
+      /* Post card */
+      .post-card {
+        padding: 1.4rem 1.5rem;
+        border-radius: 11px;
+        border: 1px solid rgba(255,255,255,0.065);
+        background: rgba(255,255,255,0.018);
+        cursor: pointer;
+        transition: border-color 0.22s, background 0.22s, transform 0.22s, box-shadow 0.22s;
+        position: relative;
+        margin-bottom: 0.6rem;
+        overflow: hidden;
+      }
+      .post-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(99,102,241,0.06) 0%, transparent 65%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+      .post-card:hover {
+        border-color: rgba(99,102,241,0.28);
+        background: rgba(99,102,241,0.03);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 0 1px rgba(99,102,241,0.1);
+      }
+      .post-card:hover::after { opacity: 1; }
+
+      .post-card-inner {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .post-card-body { flex: 1; min-width: 0; }
+
+      .post-latest-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #818cf8;
+        background: rgba(99,102,241,0.1);
+        border: 1px solid rgba(99,102,241,0.22);
+        padding: 0.12rem 0.45rem;
+        border-radius: 100px;
+        margin-bottom: 0.5rem;
+      }
+
+      .post-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #d1d5db;
+        letter-spacing: -0.015em;
+        line-height: 1.4;
+        margin: 0 0 0.4rem;
+        transition: color 0.2s;
+      }
+      .post-card:hover .post-title { color: #f9fafb; }
+
+      .post-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.6rem;
+      }
+      .post-date, .post-time {
+        font-size: 0.72rem;
+        color: #374151;
+        font-weight: 500;
+      }
+      .meta-sep {
+        width: 2px;
+        height: 2px;
+        border-radius: 50%;
+        background: #1f2937;
+        flex-shrink: 0;
+      }
+
+      .post-snippet {
+        font-size: 0.84rem;
+        line-height: 1.65;
+        color: #374151;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        transition: color 0.2s;
+      }
+      .post-card:hover .post-snippet { color: #4b5563; }
+
+      .post-arrow {
+        color: #1f2937;
+        font-size: 0.8rem;
+        transition: color 0.2s, transform 0.2s;
+        margin-top: 0.2rem;
+        flex-shrink: 0;
+      }
+      .post-card:hover .post-arrow { color: #818cf8; transform: translateX(3px); }
+
+      /* Empty state */
+      .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+      }
+      .empty-state-text {
+        font-size: 0.85rem;
+        color: #1f2937;
+        font-weight: 500;
+      }
+
+      /* ── Blog reading view ────────────────────────────────── */
+      .blog-header-bar {
+        position: sticky;
+        top: 0;
+        background: rgba(7,8,10,0.9);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255,255,255,0.055);
+        z-index: 40;
+        padding: 0.75rem 1.5rem 0;
+      }
+      .blog-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding-bottom: 0.75rem;
+      }
+      .blog-header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-width: 0;
+      }
+      .blog-header-title {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #4b5563;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: min(420px, 40vw);
+      }
+      .blog-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+      }
+
+      /* Icon buttons */
+      .icon-btn {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 7px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        color: #4b5563;
+        cursor: pointer;
+        transition: background 0.18s, color 0.18s, border-color 0.18s;
+        text-decoration: none;
+        font-size: 0.75rem;
+        outline: none;
+      }
+      .icon-btn:hover {
+        background: rgba(255,255,255,0.08);
+        color: #d1d5db;
+        border-color: rgba(255,255,255,0.11);
+      }
+
+      /* Progress bar */
+      .progress-track {
+        height: 1.5px;
+        background: rgba(255,255,255,0.04);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      #reading-progress {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        transition: width 0.1s linear;
+        border-radius: 2px;
+      }
+
+      /* Article layout */
+      .article-layout {
+        max-width: 1080px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0,1fr);
+        gap: 3rem;
+        padding: 3rem 2rem 5rem;
       }
       @media (min-width: 1024px) {
-        main {
-          margin-left: 220px;
-        }
+        .article-layout { grid-template-columns: minmax(0,1fr) 200px; }
       }
 
-      /* Blog header for sticky top */
-      .blog-header {
-        backdrop-filter: blur(8px);
+      /* Article hero */
+      .article-hero {
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .article-title {
+        font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.18;
+        color: #f9fafb;
+        margin: 0 0 0.85rem;
+      }
+      .article-meta-line {
+        font-size: 0.78rem;
+        color: #374151;
+        font-weight: 500;
       }
 
-      /* For preserving whitespace if you ever need plain text */
-      .preserve-whitespace {
-        white-space: pre-wrap;
+      /* TOC */
+      #toc {
+        padding: 1.25rem;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.015);
+        position: sticky;
+        top: 72px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        align-self: start;
       }
-
-      a {
-        color: #1e90ff;
+      #toc::-webkit-scrollbar { width: 3px; }
+      #toc::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.07); border-radius: 4px; }
+      .toc-heading {
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+      }
+      #toc-nav a {
+        display: block;
+        padding: 0.32rem 0.5rem;
+        border-radius: 5px;
+        font-size: 0.76rem;
+        color: #374151;
         text-decoration: none;
+        line-height: 1.4;
+        transition: color 0.15s, background 0.15s;
       }
+      #toc-nav a:hover { color: #9ca3af; background: rgba(255,255,255,0.035); }
+      #toc-nav a.indent { margin-left: 0.75rem; font-size: 0.72rem; color: #1f2937; }
 
-      /* Reading progress bar */
-      #reading-progress {
-        height: 2px;
-        width: 0%;
-        background: linear-gradient(90deg, #60a5fa, #22d3ee);
-        transition: width 0.1s linear;
+      /* Prose enhancements */
+      .prose-custom a { color: #818cf8 !important; transition: color 0.15s; }
+      .prose-custom a:hover { color: #a5b4fc !important; }
+      .prose-custom pre {
+        background: #0c0d0f !important;
+        border: 1px solid rgba(255,255,255,0.07) !important;
+        border-radius: 8px !important;
       }
+      .prose-custom :not(pre) > code {
+        background: rgba(255,255,255,0.07) !important;
+        border-radius: 4px !important;
+        padding: 0.15em 0.4em !important;
+        font-size: 0.85em !important;
+        color: #a5f3fc !important;
+        font-weight: 500 !important;
+      }
+      .prose-custom blockquote {
+        border-left: 3px solid #6366f1 !important;
+        background: rgba(99,102,241,0.05) !important;
+        border-radius: 0 6px 6px 0 !important;
+        padding: 0.6rem 1.1rem !important;
+        font-style: italic !important;
+      }
+      .prose-custom blockquote p { color: #6b7280 !important; margin: 0 !important; }
+      .prose-custom h1,
+      .prose-custom h2,
+      .prose-custom h3,
+      .prose-custom h4 {
+        color: #e5e7eb !important;
+        letter-spacing: -0.02em !important;
+        font-weight: 700 !important;
+      }
+      .prose-custom h2 {
+        margin-top: 2.5rem !important;
+        padding-top: 0 !important;
+        font-size: 1.4rem !important;
+      }
+      .prose-custom h3 { font-size: 1.15rem !important; }
+      .prose-custom p { color: #6b7280; line-height: 1.8 !important; }
+      .prose-custom li { color: #6b7280 !important; }
+      .prose-custom img {
+        border-radius: 10px !important;
+        border: 1px solid rgba(255,255,255,0.07) !important;
+      }
+      .prose-custom hr { border-color: rgba(255,255,255,0.07) !important; }
+      .prose-custom strong { color: #d1d5db !important; }
+      .prose-custom table { font-size: 0.9rem !important; }
+      .prose-custom thead th { color: #9ca3af !important; font-weight: 600 !important; }
+
+      /* Animations */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0);    }
+      }
+      .fade-up   { animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) both; }
+      .delay-1   { animation-delay: 0.06s; }
+      .delay-2   { animation-delay: 0.12s; }
+      .delay-3   { animation-delay: 0.18s; }
+
+      /* Scrollbar (global) */
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.13); }
+
+      a { color: inherit; text-decoration: none; }
     </style>
   </head>
 
   <body>
-    <!-- Mobile Sidebar Toggle Button -->
-    <div class="nav-toggle" onclick="toggleSidebar()">☰</div>
+    <!-- Mobile toggle -->
+    <div class="nav-toggle" onclick="toggleSidebar()" aria-label="Toggle menu">
+      <i class="fas fa-bars"></i>
+    </div>
 
-    <!-- Sidebar Navigation -->
+    <!-- ── Sidebar ──────────────────────────────────────────── -->
     <nav id="sidebar">
-      <ul>
-        <!-- Home button at the top of sidebar -->
-        <li>
-          <a href="#" onclick="showLandingPage()" class="font-bold">Home</a>
-        </li>
-        <li>
-          <a href="https://aymanmahfuzportfolio.com" target="_blank" class="font-bold">Visit my portfolio</a>
-        </li>
-        <hr class="my-3 border-gray-600" />
-        <!-- Blog links go here -->
-        <div id="sidebar-blogs"></div>
-      </ul>
+      <div class="sidebar-brand">
+        <div class="sidebar-logo" onclick="showLandingPage()">
+          <div class="sidebar-logo-dot"></div>
+          <p class="sidebar-brand-name">Principles, First</p>
+        </div>
+        <p class="sidebar-brand-sub">Ayman Mahfuz</p>
+      </div>
+
+      <div class="sidebar-scroll">
+        <div class="sidebar-section-label" style="margin-top:0.5rem;">Navigate</div>
+        <ul>
+          <li><a href="#" onclick="showLandingPage()" id="home-link">All posts</a></li>
+        </ul>
+        <div class="sidebar-section-label">Writing</div>
+        <ul id="sidebar-blogs"></ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <a href="https://aymanmahfuzportfolio.com" target="_blank" rel="noopener">
+          <i class="fas fa-arrow-up-right-from-square" style="font-size:0.6rem;"></i>
+          Portfolio
+        </a>
+      </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="min-h-screen">
-      <!-- Landing: snippet list -->
-      <section
-        id="landing-page"
-        class="mx-auto max-w-4xl w-full px-4 py-16 space-y-8"
-      >
-        <h1 class="text-4xl font-extrabold mb-4">Principles, First</h1>
-        <p class="text-gray-300">
-          Welcome to my blog! I'm usually not the type to openly share my
-          thoughts online, even though I know many people I admire—researchers
-          and innovators—do so regularly. This blog is a step out of my comfort
-          zone, an experiment and a way to build my intuition through writing.
-          Here, you'll find my thoughts, projects, and ideas—some carefully
-          considered, others purely speculative. I fully acknowledge many won't
-          age gracefully, and I'm certainly no expert in everything I share. My
-          goal is simply to document my journey through deep learning, learn by
-          teaching, and reflect on my experiences.
-        </p>
+    <!-- ── Main ──────────────────────────────────────────────── -->
+    <main>
 
-        <!-- Search -->
-        <div class="pt-2">
-          <label class="sr-only" for="search-input">Search posts</label>
-          <div class="relative">
-            <input
-              id="search-input"
-              type="search"
-              placeholder="Search posts (title or content)"
-              class="w-full bg-[#101010] border border-gray-800 rounded-xl text-sm px-10 py-3 outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 placeholder-gray-500"
-            />
-            <i
-              class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            ></i>
-            <button
-              id="clear-search"
-              class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200 px-2 py-1"
-              aria-label="Clear search"
-            >
-              <i class="fas fa-times"></i>
-            </button>
+      <!-- Landing page -->
+      <section id="landing-page">
+        <div class="landing-inner">
+
+          <!-- Hero -->
+          <div class="fade-up">
+            <a href="https://aymanmahfuzportfolio.com" target="_blank" rel="noopener" class="author-chip">
+              <div class="author-avatar">AM</div>
+              <span class="author-chip-text">Ayman Mahfuz</span>
+              <i class="fas fa-arrow-up-right-from-square author-chip-arrow"></i>
+            </a>
+
+            <h1 class="blog-headline">
+              Principles,&nbsp;<span class="blog-headline-accent">First</span>
+            </h1>
+
+            <p class="blog-tagline">
+              Writing to build intuition about deep learning, AI systems, and the ideas
+              shaping intelligent machines. Some carefully considered, others purely speculative—
+              all honest.
+            </p>
           </div>
-        </div>
 
-        <div id="blog-list" class="space-y-4"></div>
-      </section>
+          <div class="section-divider fade-up delay-1"></div>
 
-      <!-- Blog reading area -->
-      <section id="blog-content" class="hidden">
-        <header
-          class="blog-header sticky top-0 bg-black/80 p-4 border-b border-gray-800 flex flex-col gap-3 z-40"
-        >
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <button
-                id="back-button"
-                class="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 transition"
-                aria-label="Back to all posts"
-              >
-                <i class="fas fa-arrow-left"></i>
+          <!-- Search -->
+          <div class="fade-up delay-1">
+            <div class="search-wrap">
+              <input
+                id="search-input"
+                type="search"
+                placeholder="Search posts…"
+                class="search-input"
+                autocomplete="off"
+              />
+              <i class="fas fa-search search-icon"></i>
+              <button id="clear-search" class="search-clear" aria-label="Clear">
+                <i class="fas fa-times"></i>
               </button>
             </div>
-            <div class="flex items-center gap-2">
-              <button
-                id="copy-link-btn"
-                class="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 transition"
-                title="Copy link"
-              >
+          </div>
+
+          <!-- Post list -->
+          <div class="fade-up delay-2">
+            <div class="posts-header">
+              <span class="posts-label">Writing</span>
+              <span class="post-count-badge" id="post-count"></span>
+            </div>
+            <div id="blog-list"></div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Blog reading view -->
+      <section id="blog-content" class="hidden">
+
+        <header class="blog-header-bar">
+          <div class="blog-header-row">
+            <div class="blog-header-left">
+              <button id="back-button" class="icon-btn" aria-label="Back to all posts">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <p id="blog-title-header" class="blog-header-title"></p>
+            </div>
+            <div class="blog-header-actions">
+              <button id="copy-link-btn" class="icon-btn" title="Copy link">
                 <i class="fas fa-link"></i>
               </button>
-              <a
-                id="open-raw-btn"
-                href="#"
-                target="_blank"
-                rel="noopener"
-                class="px-3 py-1.5 rounded-lg bg-gray-900 border border-gray-800 hover:bg-gray-800 transition"
-                title="Open raw markdown"
-              >
-                <i class="fas fa-file-alt"></i>
+              <a id="open-raw-btn" href="#" target="_blank" rel="noopener" class="icon-btn" title="View source">
+                <i class="fas fa-file-code"></i>
               </a>
             </div>
           </div>
-          <h2 id="blog-title" class="text-2xl font-bold"></h2>
-          <p id="blog-meta" class="text-sm text-gray-400"></p>
-          <div class="w-full h-1 bg-gray-800/60 rounded overflow-hidden">
+          <div class="progress-track">
             <div id="reading-progress"></div>
           </div>
         </header>
 
-        <div
-          class="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px] gap-8 p-6"
-        >
-          <article
-            id="blog-body"
-            class="prose prose-invert prose-lg lg:prose-xl max-w-none"
-          ></article>
-          <aside
-            id="toc"
-            class="hidden lg:block sticky top-[92px] self-start max-h-[calc(100vh-120px)] overflow-auto p-4 rounded-xl border border-gray-800 bg-black/40"
-          >
-            <h4 class="text-sm uppercase tracking-wider text-gray-400 mb-3">
-              On this page
-            </h4>
-            <nav id="toc-nav" class="text-sm space-y-1"></nav>
+        <div class="article-layout">
+          <!-- Article body -->
+          <div>
+            <div class="article-hero">
+              <h1 id="article-main-title" class="article-title"></h1>
+              <p id="blog-meta" class="article-meta-line"></p>
+            </div>
+            <article id="blog-body" class="prose prose-invert prose-lg max-w-none prose-custom"></article>
+          </div>
+
+          <!-- TOC -->
+          <aside id="toc" class="hidden lg:block">
+            <div class="toc-heading">On this page</div>
+            <nav id="toc-nav"></nav>
           </aside>
         </div>
+
       </section>
     </main>
 
-    <!-- JavaScript -->
-    <!-- (Other parts of your HTML remain unchanged) -->
-
+    <!-- ── JavaScript ──────────────────────────────────────── -->
     <script>
-      const GITHUB_OWNER = "AymanMahfuz27"; 
-      const GITHUB_REPO = "principles-first-blog"; 
-      const GITHUB_DIR = ""; 
+      const GITHUB_OWNER = "AymanMahfuz27";
+      const GITHUB_REPO  = "principles-first-blog";
+      const GITHUB_DIR   = "";
 
-      let blogs = [];
+      let blogs        = [];
       let filteredBlogs = [];
-      let activeBlogId = null;
+      let activeBlogId  = null;
 
+      /* ── Sidebar ──────────────────────── */
       function toggleSidebar() {
         document.getElementById("sidebar").classList.toggle("open");
       }
 
+      /* ── Navigation ───────────────────── */
       function showLandingPage() {
         document.getElementById("blog-content").classList.add("hidden");
         document.getElementById("landing-page").classList.remove("hidden");
@@ -303,333 +860,303 @@
       }
 
       function showBlog(blogId) {
-        const blog = blogs.find((b) => b.id === blogId);
+        const blog = blogs.find(b => b.id === blogId);
         if (!blog) return;
 
         document.getElementById("landing-page").classList.add("hidden");
         document.getElementById("blog-content").classList.remove("hidden");
 
-        document.getElementById("blog-title").innerText = blog.title;
-        // Render with Marked.js for rich Markdown
+        // Header title (truncated)
+        document.getElementById("blog-title-header").innerText = blog.title;
+
+        // Article hero title
+        document.getElementById("article-main-title").innerText = blog.title;
+
+        // Render markdown
         marked.setOptions({ headerIds: true, mangle: false });
         const rendered = marked.parse(blog.content);
-        const bodyEl = document.getElementById("blog-body");
+        const bodyEl   = document.getElementById("blog-body");
         bodyEl.innerHTML = rendered;
 
-        // Compute meta (date + reading time)
-        const date = extractDateFromFilename(blog.filename);
-        const day = date.getDate();
-        const year = date.getFullYear();
+        // Meta line
+        const date  = extractDateFromFilename(blog.filename);
+        const day   = date.getDate();
+        const year  = date.getFullYear();
         const month = date.toLocaleString("default", { month: "long" });
-        document.getElementById("blog-meta").innerText = `${month} ${getOrdinalSuffix(
-          day
-        )}, ${year} • ${blog.readingTime} min read`;
+        document.getElementById("blog-meta").innerText =
+          `${month} ${getOrdinalSuffix(day)}, ${year} · ${blog.readingTime} min read`;
 
-        // Build TOC and ensure heading IDs
+        // TOC
         buildTableOfContents();
 
-        // Reading progress reset
+        // Progress reset
         updateReadingProgress(0);
 
-        // Actions
-        const rawBtn = document.getElementById("open-raw-btn");
-        rawBtn.href = blog.rawUrl;
+        // Raw link
+        document.getElementById("open-raw-btn").href = blog.rawUrl;
+
         activeBlogId = blogId;
         updateActiveSidebarLink();
 
-        // Update URL and title
         const hash = encodeURIComponent(blogId);
-        if (location.hash !== `#${hash}`) {
+        if (location.hash !== `#${hash}`)
           history.replaceState(null, "", `#${hash}`);
-        }
         document.title = `${blog.title} – Principles, First`;
+
+        // Scroll to top of reading view
+        window.scrollTo({ top: 0 });
       }
 
+      /* ── Boot ─────────────────────────── */
       document.addEventListener("DOMContentLoaded", async () => {
         const files = await getFilesFromGithub();
-
-        const mdFiles = files.filter((f) => f.name.endsWith(".md"));
+        const mdFiles = files.filter(f => f.name.endsWith(".md"));
 
         blogs = await Promise.all(mdFiles.map(loadOneBlog));
-
-        blogs = blogs.filter((b) => b !== null);
-        blogs = blogs.filter((b) => !b.title.toLowerCase().includes("archived"));
-
-
-        blogs.sort((a, b) => {
-          // Parse YYYY-MM-DD from the filename
-          const dateA = extractDateFromFilename(a.filename);
-          const dateB = extractDateFromFilename(b.filename);
-          return dateB - dateA;
-        });
+        blogs = blogs.filter(b => b !== null);
+        blogs = blogs.filter(b => !b.title.toLowerCase().includes("archived"));
+        blogs.sort((a, b) => extractDateFromFilename(b.filename) - extractDateFromFilename(a.filename));
 
         filteredBlogs = blogs.slice();
         renderAll();
 
-        // Search interactions
+        /* Search */
         const searchInput = document.getElementById("search-input");
-        const clearBtn = document.getElementById("clear-search");
+        const clearBtn    = document.getElementById("clear-search");
+
         function handleSearch() {
           const q = (searchInput.value || "").toLowerCase().trim();
-          clearBtn.classList.toggle("hidden", q.length === 0);
-          if (!q) {
-            filteredBlogs = blogs.slice();
-          } else {
-            filteredBlogs = blogs.filter((b) =>
-              (b.title + "\n" + b.content).toLowerCase().includes(q)
-            );
-          }
+          clearBtn.classList.toggle("visible", q.length > 0);
+          filteredBlogs = q
+            ? blogs.filter(b => (b.title + "\n" + b.content).toLowerCase().includes(q))
+            : blogs.slice();
           renderAll();
         }
-        if (searchInput) {
-          searchInput.addEventListener("input", handleSearch);
-        }
-        if (clearBtn) {
-          clearBtn.addEventListener("click", () => {
-            searchInput.value = "";
-            handleSearch();
-          });
-        }
 
-        // Back button and actions
-        const backBtn = document.getElementById("back-button");
-        if (backBtn) backBtn.addEventListener("click", showLandingPage);
-        const copyBtn = document.getElementById("copy-link-btn");
-        if (copyBtn) {
-          copyBtn.addEventListener("click", async () => {
-            try {
-              await navigator.clipboard.writeText(location.href);
-              copyBtn.classList.add("ring-1", "ring-sky-500/50");
-              setTimeout(() =>
-                copyBtn.classList.remove("ring-1", "ring-sky-500/50"),
-              500);
-            } catch (e) {
-              console.error(e);
-            }
-          });
-        }
+        searchInput?.addEventListener("input", handleSearch);
+        clearBtn?.addEventListener("click", () => { searchInput.value = ""; handleSearch(); });
 
-        // Reading progress listener
+        /* Back + copy link */
+        document.getElementById("back-button")?.addEventListener("click", showLandingPage);
+        document.getElementById("copy-link-btn")?.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(location.href);
+            const btn = document.getElementById("copy-link-btn");
+            btn.style.borderColor = "rgba(99,102,241,0.5)";
+            btn.style.color = "#818cf8";
+            setTimeout(() => {
+              btn.style.borderColor = "";
+              btn.style.color = "";
+            }, 700);
+          } catch(e) { console.error(e); }
+        });
+
+        /* Reading progress */
         window.addEventListener("scroll", () => requestAnimationFrame(updateReadingProgress));
         window.addEventListener("resize", () => requestAnimationFrame(updateReadingProgress));
 
-        // Deep link routing
-        function handleRouteFromHash() {
+        /* Hash routing */
+        function handleRoute() {
           const hash = decodeURIComponent(location.hash.replace(/^#/, ""));
-          if (hash) {
-            showBlog(hash);
-          } else {
-            showLandingPage();
-          }
+          hash ? showBlog(hash) : showLandingPage();
         }
-        window.addEventListener("hashchange", handleRouteFromHash);
-        handleRouteFromHash();
+        window.addEventListener("hashchange", handleRoute);
+        handleRoute();
       });
 
+      /* ── GitHub ───────────────────────── */
       async function getFilesFromGithub() {
-        const baseUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_DIR}`;
-        const resp = await fetch(baseUrl);
-        if (!resp.ok) {
-          console.error(`Failed to list files from GitHub: ${resp.status}`);
-          return [];
-        }
+        const url  = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_DIR}`;
+        const resp = await fetch(url);
+        if (!resp.ok) { console.error(`GitHub list failed: ${resp.status}`); return []; }
         return resp.json();
       }
 
       async function loadOneBlog(fileObj) {
         try {
-          const contentResp = await fetch(fileObj.download_url);
-          if (!contentResp.ok) {
-            console.error(
-              `Failed to fetch content from ${fileObj.download_url}`
-            );
-            return null;
-          }
-          const text = await contentResp.text();
-          const nameWithoutExt = fileObj.name.replace(/\.md$/i, "");
-          const nameSansDate = nameWithoutExt.replace(
-            /^\d{4}-\d{2}-\d{2}-/,
-            ""
-          );
-          const snippet = text.length > 80 ? text.slice(0, 80) + "..." : text;
-          const words = text.trim().split(/\s+/).length;
-          const readingTime = Math.max(1, Math.round(words / 200));
+          const resp = await fetch(fileObj.download_url);
+          if (!resp.ok) return null;
+          const text            = await resp.text();
+          const nameWithoutExt  = fileObj.name.replace(/\.md$/i, "");
+          const title           = nameWithoutExt.replace(/^\d{4}-\d{2}-\d{2}-/, "");
+          const words           = text.trim().split(/\s+/).length;
+          const readingTime     = Math.max(1, Math.round(words / 200));
           return {
             id: fileObj.name,
             filename: fileObj.name,
-            title: nameSansDate,
+            title,
             content: text.trim(),
-            snippet: snippet.trim(),
+            snippet: extractSnippet(text, 200),
             readingTime,
             rawUrl: fileObj.download_url,
           };
-        } catch (e) {
-          console.error(e);
-          return null;
-        }
+        } catch(e) { console.error(e); return null; }
       }
 
+      /* Strip markdown syntax and return a clean snippet */
+      function extractSnippet(text, maxLength) {
+        let s = text
+          .replace(/```[\s\S]*?```/g, "")
+          .replace(/`[^`]*`/g, "")
+          .replace(/^#{1,6}\s+.*/gm, "")
+          .replace(/!\[.*?\]\(.*?\)/g, "")
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+          .replace(/[*_~>#|\\]/g, "")
+          .replace(/\n+/g, " ")
+          .trim();
+        if (s.length <= maxLength) return s;
+        const cut = s.lastIndexOf(" ", maxLength);
+        return s.slice(0, cut > 0 ? cut : maxLength) + "…";
+      }
+
+      /* ── Date helpers ─────────────────── */
       function extractDateFromFilename(filename) {
-        const match = filename.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (!match) {
-          return new Date("1970-01-01");
-        }
-        const monthNames = {
-          "01": "January",
-          "02": "February",
-          "03": "March",
-          "04": "April",
-          "05": "May",
-          "06": "June",
-          "07": "July",
-          "08": "August",
-          "09": "September",
-          10: "October",
-          11: "November",
-          12: "December",
-        };
-        const [_, year, month, day] = match;
-        return new Date(`${monthNames[month]} ${day}, ${year}`);
+        const m = filename.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (!m) return new Date("1970-01-01");
+        const names = { "01":"January","02":"February","03":"March","04":"April",
+          "05":"May","06":"June","07":"July","08":"August","09":"September",
+          "10":"October","11":"November","12":"December" };
+        return new Date(`${names[m[2]]} ${m[3]}, ${m[1]}`);
       }
 
-      // Helper function to get ordinal suffix for a day (e.g., 1st, 2nd, 3rd, etc.)
       function getOrdinalSuffix(day) {
         if (day > 3 && day < 21) return day + "th";
         switch (day % 10) {
-          case 1:
-            return day + "st";
-          case 2:
-            return day + "nd";
-          case 3:
-            return day + "rd";
-          default:
-            return day + "th";
+          case 1: return day + "st";
+          case 2: return day + "nd";
+          case 3: return day + "rd";
+          default: return day + "th";
         }
       }
 
-      // Renders the sidebar & snippet listing
+      /* ── Render ───────────────────────── */
       function renderAll() {
-        // Sidebar links
+        /* Sidebar links */
         const sidebarDiv = document.getElementById("sidebar-blogs");
         sidebarDiv.innerHTML = "";
-        blogs.forEach((b) => {
+        blogs.forEach(b => {
           const li = document.createElement("li");
-          const a = document.createElement("a");
-          a.href = "#";
-          a.textContent = b.title;
+          const a  = document.createElement("a");
+          a.href          = "#";
+          a.textContent   = b.title;
+          a.dataset.blogId = b.id;
           a.onclick = () => {
             showBlog(b.id);
-            // Close sidebar on mobile after navigation
             document.getElementById("sidebar").classList.remove("open");
           };
-          a.dataset.blogId = b.id;
           li.appendChild(a);
           sidebarDiv.appendChild(li);
         });
 
-        // Main snippet listing
-        const blogListDiv = document.getElementById("blog-list");
-        blogListDiv.innerHTML = "";
-        const list = filteredBlogs.length ? filteredBlogs : blogs;
+        /* Post count */
+        const countEl = document.getElementById("post-count");
+        if (countEl) countEl.textContent = `${filteredBlogs.length} post${filteredBlogs.length !== 1 ? "s" : ""}`;
+
+        /* Card list */
+        const listDiv = document.getElementById("blog-list");
+        listDiv.innerHTML = "";
+        const list = filteredBlogs;
+
         if (list.length === 0) {
           const empty = document.createElement("div");
-          empty.className = "text-gray-400 text-sm";
-          empty.textContent = "No posts match your search.";
-          blogListDiv.appendChild(empty);
+          empty.className = "empty-state";
+          empty.innerHTML = `<p class="empty-state-text">No posts match your search.</p>`;
+          listDiv.appendChild(empty);
+          updateActiveSidebarLink();
           return;
         }
-        list.forEach((b) => {
-          const card = document.createElement("article");
-          card.className =
-            "bg-[#141414] rounded-xl p-6 border border-gray-800/60 shadow-sm hover:shadow-lg transition transform hover:-translate-y-0.5";
 
-          const h2 = document.createElement("h2");
-          h2.className = "text-xl font-bold tracking-tight";
-          h2.textContent = b.title;
-          card.appendChild(h2);
+        list.forEach((b, i) => {
+          const card = document.createElement("div");
+          card.className = "post-card";
+          card.onclick   = () => showBlog(b.id);
 
-          const dateDiv = document.createElement("h3");
-          dateDiv.className = "text-sm text-gray-400";
-          const date = extractDateFromFilename(b.filename);
-          const day = date.getDate();
-          const year = date.getFullYear();
-          const month = date.toLocaleString("default", { month: "long" });
-          dateDiv.textContent = `${month} ${getOrdinalSuffix(day)}, ${year} • ${b.readingTime} min read`;
-          card.appendChild(dateDiv);
+          const date  = extractDateFromFilename(b.filename);
+          const day   = date.getDate();
+          const year  = date.getFullYear();
+          const month = date.toLocaleString("default", { month: "short" });
 
-          const preview = document.createElement("p");
-          preview.className = "mt-3 text-gray-300 leading-relaxed line-clamp-3";
-          preview.textContent = b.snippet;
-          card.appendChild(preview);
+          card.innerHTML = `
+            <div class="post-card-inner">
+              <div class="post-card-body">
+                ${i === 0 ? '<div class="post-latest-tag"><i class="fas fa-circle" style="font-size:0.45rem;"></i> Latest</div>' : ""}
+                <p class="post-title">${escHtml(b.title)}</p>
+                <div class="post-meta">
+                  <span class="post-date">${month} ${getOrdinalSuffix(day)}, ${year}</span>
+                  <span class="meta-sep"></span>
+                  <span class="post-time">${b.readingTime} min read</span>
+                </div>
+                <p class="post-snippet">${escHtml(b.snippet)}</p>
+              </div>
+              <i class="fas fa-arrow-right post-arrow"></i>
+            </div>
+          `;
 
-          const btn = document.createElement("button");
-          btn.className =
-            "mt-4 px-3 py-1.5 bg-gray-900 hover:bg-gray-800 border border-gray-800 rounded-lg";
-          btn.textContent = "Read More";
-          btn.onclick = () => showBlog(b.id);
-          card.appendChild(btn);
-
-          blogListDiv.appendChild(card);
+          listDiv.appendChild(card);
         });
 
         updateActiveSidebarLink();
       }
 
+      function escHtml(str) {
+        return str
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
       function updateActiveSidebarLink() {
-        const links = document.querySelectorAll('#sidebar-blogs a');
-        links.forEach((a) => {
-          if (a.dataset.blogId === activeBlogId) {
-            a.classList.add('text-sky-300');
-          } else {
-            a.classList.remove('text-sky-300');
-          }
+        document.querySelectorAll("#sidebar-blogs a").forEach(a => {
+          a.classList.toggle("active", a.dataset.blogId === activeBlogId);
         });
       }
 
+      /* ── TOC ──────────────────────────── */
       function slugify(text) {
-        return text
-          .toString()
-          .toLowerCase()
-          .trim()
-          .replace(/[^a-z0-9\s-]/g, '')
-          .replace(/\s+/g, '-')
-          .replace(/-+/g, '-');
+        return text.toString().toLowerCase().trim()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
       }
 
       function buildTableOfContents() {
-        const container = document.getElementById('blog-body');
-        const nav = document.getElementById('toc-nav');
+        const container = document.getElementById("blog-body");
+        const nav       = document.getElementById("toc-nav");
         if (!container || !nav) return;
-        nav.innerHTML = '';
-        const headings = container.querySelectorAll('h2, h3');
-        headings.forEach((h) => {
-          if (!h.id) {
-            h.id = slugify(h.textContent || 'section');
-          }
-          const link = document.createElement('a');
-          link.href = `#${h.id}`;
-          link.textContent = h.textContent || '';
-          link.className = 'block px-2 py-1 rounded hover:bg-gray-800/60 transition';
-          if (h.tagName.toLowerCase() === 'h3') {
-            link.className += ' ml-4 text-gray-300';
-          }
+        nav.innerHTML = "";
+
+        const headings = container.querySelectorAll("h2, h3");
+        if (headings.length === 0) {
+          document.getElementById("toc").classList.add("hidden");
+          return;
+        }
+        document.getElementById("toc").classList.remove("hidden");
+
+        headings.forEach(h => {
+          if (!h.id) h.id = slugify(h.textContent || "section");
+          const link      = document.createElement("a");
+          link.href       = `#${h.id}`;
+          link.textContent = h.textContent || "";
+          link.className  = h.tagName.toLowerCase() === "h3" ? "indent" : "";
           nav.appendChild(link);
         });
       }
 
+      /* ── Reading progress ─────────────── */
       function updateReadingProgress(forcePercent) {
-        const bar = document.getElementById('reading-progress');
+        const bar = document.getElementById("reading-progress");
         if (!bar) return;
-        if (typeof forcePercent === 'number') {
+        if (typeof forcePercent === "number") {
           bar.style.width = `${Math.max(0, Math.min(100, forcePercent))}%`;
           return;
         }
-        const article = document.getElementById('blog-body');
+        const article = document.getElementById("blog-body");
         if (!article) return;
-        const rectTop = article.getBoundingClientRect().top + window.scrollY;
-        const total = article.offsetHeight - window.innerHeight;
-        const scrolled = window.scrollY - rectTop;
-        const pct = total > 0 ? (scrolled / total) * 100 : 0;
+        const top     = article.getBoundingClientRect().top + window.scrollY;
+        const total   = article.offsetHeight - window.innerHeight;
+        const scrolled = window.scrollY - top;
+        const pct     = total > 0 ? (scrolled / total) * 100 : 0;
         bar.style.width = `${Math.max(0, Math.min(100, pct))}%`;
       }
     </script>
