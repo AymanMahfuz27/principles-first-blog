@@ -2,7 +2,7 @@
 
 There is something painful about Apple missing the first great AI moment.
 
-Not because Apple should have invented large language models. That was never the point. Apple is rarely first to a new technology. Its strength has always been knowing when a technology is ready to become human.
+Apple did not need to invent large language models. That was never the point. Apple is rarely first to a new technology. Its strength has always been knowing when a technology is ready to become human.
 
 The Mac made computing visual. The iPhone made computing direct. The Watch and AirPods made computing ambient. AI makes computing conversational. It lets a person express intent in ordinary language and have the machine understand, reason, and act.
 
@@ -19,6 +19,32 @@ OpenAI made the interface obvious. Anthropic made it calmer and more thoughtful.
 That is the core issue. Apple treated AI like an enhancement to the operating system. It should have treated AI as the next interface layer.
 
 The good news is that Apple can still win. The pieces are there. The product just needs to become much more direct.
+
+## The Interface Is Already Obvious
+
+One of Steve Jobs's clearest product instincts was that computers should meet people where their intuition already lives.
+
+When he talked about the early graphical interface, he described something simple but profound: people already know how to work. They have desks. They have papers. They have folders. They stack things, move things, keep the important item on top, switch between tasks, and build order out of mess. The job of the computer was not to force people into a completely foreign mental model. The job was to translate familiar human behavior into a digital interface.
+
+That is why the desktop metaphor worked. Windows, folders, documents, menus, and consistent app behaviors gave people a way into computing. Once you learned one part of the system, the rest became less intimidating. The interface respected human intuition.
+
+That same lesson applies to AI.
+
+The chatbot is not just a feature. It is an interface. More importantly, it is now an intuition. Hundreds of millions of people have learned that if they type a question into a box, attach context, and continue the conversation, the system can help them. That behavior is already established.
+
+Apple should lean into it.
+
+There is no need to hide the chat interface because it feels too obvious or too similar to what others built. The obvious interface is often the right one. The magic should come from what Apple builds on top of it.
+
+Imagine a Siri conversation on Mac where you are working in Xcode, paste in a code snippet, and say, "Look at the code I just attached and tell me why this state update is broken." Siri should understand the pasted context, the current app, the file you are editing, and the project around it. You should not have to explain the whole situation from scratch.
+
+Imagine reading a PDF, highlighting a paragraph, and asking, "Compare this argument to the notes I took last week." Siri should know what "this" refers to, find the notes, and answer in context.
+
+Imagine writing an email and saying, "Make this sound more direct, but not rude." Siri should edit the draft in place because it knows the object you are referring to.
+
+That is where Apple can make chat feel native. Start with the interface people already understand. Then make it contextual, personal, system-aware, and private.
+
+That would be very Apple.
 
 ## Apple's Advantage Is Still Real
 
@@ -96,19 +122,27 @@ This is one area where Apple should not over-design the concept. The chat interf
 
 Apple can still make it beautiful. It can still make it feel native. But it should not avoid the most useful interface simply because someone else proved it first.
 
-## On-Device AI Is Important, But It Is Not Enough
+## On-Device AI Is the Goal, Not the Starting Point
 
-Apple is right to care about on-device intelligence. Local models are fast, private, and efficient. They are ideal for many tasks: rewriting text, summarizing notifications, classifying content, generating embeddings, searching personal data, and handling small requests.
+Apple is right to care about on-device intelligence. Local models are fast, private, and efficient. They are ideal for rewriting text, summarizing notifications, classifying content, generating embeddings, searching personal data, and handling small requests.
 
-But a local model cannot be the whole assistant.
+But a local model cannot be the whole assistant yet.
 
-The assistant users now expect needs broad knowledge, deep reasoning, long context, tool use, and the ability to recover from mistakes. That level of capability usually requires larger models and cloud-scale inference.
+This is where another old Jobs idea matters. In the early days of portable computing, Jobs talked about the dream of making an incredibly great computer small enough to carry naturally. The technology was not ready on day one. Apple could either make a compromised machine immediately, or build toward the future in stages: first something that fit in a briefcase, then something smaller, then eventually the kind of thin, portable machine that could fit in an envelope.
 
-Apple should not frame this as a conflict between privacy and intelligence. It should make routing invisible.
+That is the right way to think about on-device AI.
 
-Simple tasks should run on-device. Sensitive tasks should stay local when possible. Hard reasoning should go to larger models through Apple's private cloud infrastructure. The user should experience one assistant, not a set of deployment decisions.
+The long-term goal should absolutely be a small, fast, efficient local model that can reason deeply, remember useful context, and solve serious problems on the device. That future is worth building toward. It fits Apple's values perfectly.
 
-This is exactly why Private Cloud Compute matters.
+But we are not there yet.
+
+The assistant users now expect needs broad knowledge, deep reasoning, long context, tool use, and the ability to recover from mistakes. That level of capability still requires larger models and cloud-scale inference.
+
+So Apple should not ship the AI equivalent of a compromised early portable computer just to keep everything local. It should build the assistant it wants to have in the future, using the infrastructure available today.
+
+That means local models where they work, and large private cloud models where they are needed.
+
+The goal is still the envelope. The path there runs through the briefcase.
 
 ## Private Cloud Compute Should Be the Centerpiece
 
