@@ -435,11 +435,19 @@
         align-items: center;
         gap: 0.5rem;
         margin-bottom: 0.6rem;
+        flex-wrap: wrap;
       }
       .post-date, .post-time {
         font-size: 0.72rem;
         color: #374151;
         font-weight: 500;
+      }
+      .post-category {
+        font-size: 0.66rem;
+        color: #4a7fa5;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
       }
       .meta-sep {
         width: 2px;
@@ -1105,33 +1113,24 @@
 
       /* ── Render ───────────────────────── */
       function renderAll() {
-        /* Sidebar links — grouped by category */
+        /* Sidebar links — newest first, matching the main feed */
         const sidebarDynamic = document.getElementById("sidebar-dynamic");
         sidebarDynamic.innerHTML = "";
 
-        const grouped = {};
-        CATEGORIES.filter(c => c !== "All").forEach(c => grouped[c] = []);
+        const label = document.createElement("div");
+        label.className = "sidebar-section-label";
+        label.textContent = "Posts";
+        sidebarDynamic.appendChild(label);
+
+        const ul = document.createElement("ul");
         blogs.forEach(b => {
-          const cat = POST_CATEGORIES[b.filename] || "Personal";
-          if (!grouped[cat]) grouped[cat] = [];
-          grouped[cat].push(b);
+          const li = document.createElement("li");
+          const a  = document.createElement("a");
+          a.href = "#"; a.textContent = b.title; a.dataset.blogId = b.id;
+          a.onclick = () => { showBlog(b.id); document.getElementById("sidebar").classList.remove("open"); };
+          li.appendChild(a); ul.appendChild(li);
         });
-        CATEGORIES.filter(c => c !== "All").forEach(cat => {
-          if (!grouped[cat] || grouped[cat].length === 0) return;
-          const label = document.createElement("div");
-          label.className = "sidebar-section-label";
-          label.textContent = cat;
-          sidebarDynamic.appendChild(label);
-          const ul = document.createElement("ul");
-          grouped[cat].forEach(b => {
-            const li = document.createElement("li");
-            const a  = document.createElement("a");
-            a.href = "#"; a.textContent = b.title; a.dataset.blogId = b.id;
-            a.onclick = () => { showBlog(b.id); document.getElementById("sidebar").classList.remove("open"); };
-            li.appendChild(a); ul.appendChild(li);
-          });
-          sidebarDynamic.appendChild(ul);
-        });
+        sidebarDynamic.appendChild(ul);
 
         /* Apply search + category filter */
         const list = filteredBlogs.filter(b =>
@@ -1155,22 +1154,7 @@
           return;
         }
 
-        // Show category label above cards when not filtering by category
-        if (!activeCategory) {
-          // Group cards by category, show section labels
-          const categoryOrder = CATEGORIES.filter(c => c !== "All");
-          categoryOrder.forEach(cat => {
-            const catPosts = list.filter(b => (POST_CATEGORIES[b.filename] || "Personal") === cat);
-            if (catPosts.length === 0) return;
-            const header = document.createElement("div");
-            header.style.cssText = "font-size:0.62rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#374151;margin:1.5rem 0 0.6rem;font-family:'Manrope',sans-serif;";
-            header.textContent = cat;
-            listDiv.appendChild(header);
-            catPosts.forEach((b, i) => appendCard(listDiv, b, i === 0 && cat === categoryOrder[0]));
-          });
-        } else {
-          list.forEach((b, i) => appendCard(listDiv, b, i === 0));
-        }
+        list.forEach((b, i) => appendCard(listDiv, b, i === 0));
 
         updateActiveSidebarLink();
       }
@@ -1180,6 +1164,7 @@
           card.className = "post-card";
           card.onclick   = () => showBlog(b.id);
 
+          const category = POST_CATEGORIES[b.filename] || "Personal";
           const date  = extractDateFromFilename(b.filename);
           const day   = date.getDate();
           const year  = date.getFullYear();
@@ -1194,6 +1179,8 @@
                   <span class="post-date">${month} ${getOrdinalSuffix(day)}, ${year}</span>
                   <span class="meta-sep"></span>
                   <span class="post-time">${b.readingTime} min read</span>
+                  <span class="meta-sep"></span>
+                  <span class="post-category">${escHtml(category)}</span>
                 </div>
                 <p class="post-snippet">${escHtml(b.snippet)}</p>
               </div>
