@@ -1,45 +1,27 @@
-## The Three-Legged Stool of AI Progress: Why "Scaling Laws" Are Only Part of the Story
+# Making sense of scaling laws
 
-For the longest time, the narrative around AI progress felt a bit like a magic trick. We were told the secret was "scaling laws"—just add more data, more parameters, and more compute, and voilà, better models will appear. And for a while, that seemed to be true. But as I've been digging deeper, that explanation started to feel incomplete. It was like saying the secret to a great cake is just using more flour and sugar, ignoring the importance of the recipe, the quality of the ingredients, and the heat of the oven.
+Scaling laws helped me understand why increasing model size, data, and compute can produce predictable improvements. They also left me with a question: if scale is so important, how do changes in architecture or training efficiency shift what we get from the same budget? DeepSeek made that question harder to ignore. Its results suggested that comparing GPU counts alone was an incomplete way to compare systems.
 
-Then came DeepSeek. Here was a model that achieved state-of-the-art results, but seemingly with far less compute than the traditional scaling laws would have predicted. For some, this was a sign that the scaling laws were broken. For me, it was the final clue I needed to build a more complete mental model. DeepSeek didn't break the laws of scaling; it just highlighted that we've been focusing on the wrong parts of the equation.
+I do not think those results break scaling laws. An empirical relationship is measured under particular choices of architecture, data, and training procedure. Changing those choices can change the relationship. A more efficient system may reach a given loss with less compute while still following a regular scaling trend within its own setup.
 
-This led me to a new way of thinking about AI progress, which I like to call the **Three-Legged Stool**. For a model to be stable and reach its maximum height (i.e., performance), it needs three legs to be in balance. If one leg is too short, the whole thing wobbles.
+## Three resources that interact
 
-Here are the three legs:
+The **model** determines what computation we perform and how effectively it can use the data. Parameter count matters, but so do the architecture and training procedure. An optimizer such as AdamW changes how the weights are updated; regularization such as dropout changes the learning problem. LoRA addresses a different issue by reducing the number of parameters updated during fine-tuning. Treating all three as interchangeable efficiency techniques would hide what each one actually saves.
 
-### Leg 1: The Model (The "Recipe")
+The **data** determines the patterns the model has the opportunity to learn. More tokens help only to the extent that they add useful training signal. Diversity, quality, repetition, and relevance to the intended tasks affect that signal. A smaller dataset can outperform a larger one in some settings, but quality does not eliminate the need for sufficient coverage.
 
-This isn't just about the number of parameters. It's about the *quality* and *efficiency* of the architecture itself.
-*   **Architecture:** Are we using a Transformer, a CNN, a new hybrid model? The design of the model is the fundamental recipe.
-*   **Parameters:** Yes, the size of the model matters. This is the raw "horsepower."
-*   **Optimization:** This is the secret sauce. Techniques like AdamW, dropout, and clever new methods like LoRA are the difference between a powerful model and a powerful model that can actually be trained effectively.
+Compute determines how much of the learning process we can run. Hardware throughput, memory capacity, communication, and kernel efficiency all affect the useful work we get from a budget. Techniques such as FlashAttention reduce the cost of a particular operation. That lets us use the savings for a larger model, more data, or more experiments, depending on which constraint matters most.
 
-### Leg 2: The Data (The "Ingredients")
+These resources interact. A larger model that sees too little data may use compute poorly. A good architecture can still be limited by a weak dataset. Faster hardware does little for a pipeline that spends its time waiting on data or communication.
 
-We've all heard "garbage in, garbage out." This leg is about the fuel for our models.
-*   **Quantity:** The sheer volume of data is obviously important.
-*   **Quality:** This is the part that I think is becoming increasingly critical. Is the data diverse? Is it clean? Is it representative of the problems we want to solve? A smaller dataset of incredibly high-quality, diverse information can be far more powerful than a massive dataset of internet noise.
+## What my informal formula was trying to capture
 
-### Leg 3: The Compute (The "Oven")
-
-This is the raw energy that makes everything happen.
-*   **Raw Power:** How many GPUs or TPUs can you throw at the problem?
-*   **Compute Efficiency:** This is the sub-constraint that DeepSeek brought into the spotlight. Innovations like FlashAttention or optimized kernels are like a convection oven—they allow you to cook faster and more evenly with the same amount of energy. This is a huge force multiplier.
-
-### Putting It All Together: A Back-of-the-Napkin Formula
-
-The DeepSeek example fits perfectly into this framework. It didn't have the most "Raw Power" in its compute leg, but it had a massive advantage in "Compute Efficiency" and likely a very strong "Model" leg (a better recipe). This allowed it to stand just as tall as models that were relying on a much longer, brute-force compute leg.
-
-To crystallize my own thinking, I sketched out a conceptual formula. This isn't a proven law; it's just a tool for my own intuition:
+I originally sketched the following relationship as a way to organize my intuition:
 
 \[ \text{Performance} \approx k \cdot (\text{Model}^{\alpha} \cdot \text{Data}^{\beta} \cdot \text{Compute}^{\gamma}) \]
 
-Here, \(M\), \(D\), and \(C\) represent the "quality" of each of the three legs, not just their raw size. The exponents (\(\alpha, \beta, \gamma\)) represent how much each leg contributes to the final performance, and I suspect their relative importance changes as the whole field evolves.
+Here, the three terms stand for the quality and quantity of those resources, and the exponents stand for their relative influence. This is not a fitted scaling law. The terms are not defined precisely enough to calculate with, and a single product cannot capture every interaction. Its only purpose is to remind me that a resource has value through the system that uses it.
 
-### Why This Matters to Me
+The published work is more specific. [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) measures relationships between loss and resources under controlled settings. [The Chinchilla study](https://arxiv.org/abs/2203.15556) examines how to allocate a training compute budget between model size and data. Those are empirical questions, rather than statements that bigger is always better.
 
-This framework isn't just an academic exercise. As a builder, it gives me a structured way to think about where the next big breakthroughs will come from. It tells me that we shouldn't just be looking at the teams with the most GPUs. We should be looking at the teams with the most clever architectural tweak, the highest-quality dataset, or the most efficient training algorithm.
-
-It's a reminder that progress in AI isn't a monolithic march of scale. It's a complex, interconnected dance between these three fundamental constraints. And the teams that understand how to balance all three legs of the stool are the ones who will build the future.
-
+For my own projects, the consequence is practical: identify the limiting resource before increasing it. If the next improvement comes from better data, buying more compute may only make the same mistake faster. If the training pipeline is inefficient, fixing it can increase the number of ideas I can test without changing the hardware.

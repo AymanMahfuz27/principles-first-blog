@@ -1,25 +1,21 @@
-## What Happens When Science Never Sleeps? A Look at the Coming AGI Revolution
+# AI and the rate of scientific discovery
 
-I’ve been thinking a lot lately about the bottlenecks in science. We celebrate breakthroughs like CRISPR, gravitational wave detection, and new protein folding models, but the reality is that these are rare peaks separated by long, arduous valleys of painstaking work. Science is slow, not because we lack brilliant minds, but because research is fundamentally limited by human constraints: we get tired, we need to sleep, we get stuck in cognitive ruts, and we can only focus on a few ideas at a time.
+The possibility that motivates me most about AGI is faster scientific work. Research depends on how many ideas we can generate, how well we choose experiments, and how quickly we learn from the results. Human time limits all three. A system that could make useful contributions throughout that loop would change how much research a team could attempt.
 
-But what if that bottleneck was removed? What if we built a scientist that never gets tired, never gets discouraged, and can test a million hypotheses in the time it takes a human researcher to drink their morning coffee? This isn't just a fun sci-fi thought experiment; I believe it's the future that Artificial General Intelligence (AGI) is steering us toward. An AGI won't just be another tool for scientists—it will be the most powerful scientist the world has ever seen.
+I think of the progression as moving from an assistant that handles isolated tasks to a system that can maintain a research program. An assistant might analyze a dataset or summarize prior work. An autonomous researcher would also choose what to investigate, design a test, interpret the outcome, and revise its next experiment. Each step depends on the previous one being trustworthy.
 
-### From Research Assistant to Research Engine
+## The feedback loop
 
-Today, we're already seeing the early signs of this. AI is used to sift through massive datasets, identify patterns in medical scans, and simulate complex physical systems. But this is just the beginning. The real paradigm shift will happen when these systems move from being passive assistants to active, autonomous drivers of the scientific process.
+An automated lab makes the idea concrete. A model proposes a drug candidate, selects an experiment, sends it to laboratory equipment, and uses the result to choose the next candidate. The potential gain comes from shortening the cycle and running more independent cycles in parallel. It also comes from exploring ideas that a human team might set aside because of limited time or funding.
 
-Imagine an AI that is connected to fully automated labs. It could design an experiment to test a new drug candidate, 3D-print the necessary equipment, run the experiment, analyze the results, and then use that new data to design the *next* ten thousand experiments, all in a matter of hours. This is the concept of the "self-driving lab," and it represents a fundamental change in the pace of discovery. The feedback loop of hypothesis -> experiment -> analysis -> new hypothesis, which can take a human team years to navigate, could be compressed into minutes.
+There are limits to that acceleration. Physical experiments still take time, equipment has finite throughput, and a model can generate bad hypotheses much faster than a lab can reject them. More parallel work also means more opportunities to misinterpret noise. The quality of the selection and verification process matters as much as the number of experiments.
 
-This isn't about replacing human scientists, but about augmenting our collective intelligence on an unimaginable scale. An AGI could explore the "long tail" of scientific ideas—the unconventional, high-risk, high-reward hypotheses that a human researcher, constrained by career pressures and funding cycles, might never pursue. It could find the connections between disparate fields—say, an insight from fluid dynamics that unlocks a problem in neuroscience—that no single human could ever spot.
+I am especially interested in the possibility of connecting fields that are usually studied separately. A result in fluid dynamics might suggest a useful model for a biological process. A system with broad knowledge could make more of those connections, but the connection would still need to produce a testable claim. An analogy is a starting point for research.
 
-### Are There Unsolvable Problems?
+## Which limits remain
 
-This relentless, parallelized approach to science forces us to ask a fascinating question: are there problems that are fundamentally unsolvable, even for a super-intelligence? Of course, some limits are baked into the universe. The laws of physics are what they are, and Gödel's incompleteness theorems suggest there will always be mathematical truths we can't prove.
+I don't know whether better intelligence would make problems such as quantum gravity, aging, or room-temperature superconductivity tractable. Their difficulty may come from missing observations, expensive experiments, or constraints we have not understood. Describing them as large search spaces does not establish that enough search will solve them.
 
-But many of the problems we consider "hard" today might just be "hard for humans." Take quantum gravity, room-temperature superconductors, or the biological mechanisms of aging. These are problems that involve navigating astronomically vast search spaces of possibilities. For a human, it's like trying to find a single specific grain of sand on all the world's beaches. For an AGI, it's just a matter of deploying enough parallel search agents.
+Some boundaries are more fundamental. Physical limits constrain experiments, and formal results about computation and proof constrain what any algorithm can decide. Gödel's incompleteness theorems concern particular formal systems; they do not tell us which practical scientific problems an AI would fail to solve. We should keep those distinctions clear when discussing superintelligence.
 
-### The Future That Pulls Me Forward
-
-The idea of an unstoppable, tireless scientific engine is what gets me excited to work in AI every single day. The challenges we face—from aligning these powerful systems with human values to building the hardware to run them—are immense. But the potential payoff is a future where we can systematically dismantle the diseases, limitations, and cosmic mysteries that have confined us.
-
-We are on the cusp of an era where scientific progress is no longer measured in decades or human lifetimes, but in hours and minutes. The next great scientific revolution won't be a single discovery; it will be the invention of a machine that can make all other discoveries. And being a part of building that is one of the most exciting things I can imagine.
+My expectation is that AI could remove substantial human bottlenecks without removing every bottleneck. That would still be a major change. It is one reason I want to work on the models, hardware, and evaluation methods needed to make autonomous research reliable: faster discovery is valuable only when the conclusions remain grounded in evidence.

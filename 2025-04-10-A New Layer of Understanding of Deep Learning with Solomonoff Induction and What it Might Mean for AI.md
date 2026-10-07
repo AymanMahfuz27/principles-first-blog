@@ -1,42 +1,27 @@
-## From Physics to Math: The Grand Unification of My AI Intuition
+# Compression and Solomonoff induction
 
-For the last few months, I've been on a mission to build a real intuition for how large language models work. I've written about the idea that prediction forces compression, and how that compression could be the engine of emergent intelligence. I even ran a small experiment to test that theory. It felt like I was getting closer to a real understanding, piecing together a puzzle.
+Solomonoff induction gave me a more precise way to think about the connection between prediction and compression. I had been developing the intuition that next-token prediction rewards a model for learning reusable structure. Hearing an OpenAI researcher discuss compression led me to ask what an idealized version of that process would look like.
 
-Then, a few days ago, I heard two words that made the entire puzzle snap into place: **Solomonoff Induction.**
+The appeal is straightforward: if a compact rule explains many observations, it may also make useful predictions about observations we have not seen. A description that merely lists the past data does not offer the same kind of generalization. This is the connection to Occam's razor that initially caught my attention.
 
-I was listening to a talk where an OpenAI researcher was asked why unsupervised learning is so effective. He answered with a single word: "Compression." Then he explained that, in a perfect world, the ultimate form of intelligence is Solomonoff Induction—the idea that the best way to predict the future is to find the simplest program that can explain all your past observations. It's a formalization of Occam's Razor, a beautiful blend of Bayesian reasoning and computational theory.
+## What the formal idea says
 
-Hearing that didn't just add a new piece to my puzzle; it revealed a new layer beneath the entire thing. It re-contextualized my whole journey of understanding.
+**Solomonoff induction** assigns more prior weight to shorter programs and uses programs consistent with the observations to predict what comes next. It combines possible explanations rather than simply selecting the single shortest program. The reference machine matters to the description of program length, and the general procedure is incomputable. It provides a theoretical model of induction, not an algorithm we can run at full generality.
 
-### The Journey So Far: From Programming to Physics
+[Solomonoff's discussion of algorithmic probability](https://raysolomonoff.com/publications/isis96.pdf) makes the distinction between the theoretical method and practical approximations explicit. That distinction matters when connecting it to deep learning. Training a neural network is not equivalent to enumerating programs under a universal prior, and a neural network's parameters are not a direct measurement of the shortest program that explains its data.
 
-For a long time, I thought about machine learning like **programming**. It was an empirical craft of trial and error, of engineering features and tweaking architectures.
+The connection I find useful is conceptual. Both perspectives give a reason to care about structure that can explain many examples compactly. A language model may reuse grammatical, factual, or relational patterns to improve prediction. Solomonoff induction helps me articulate why such reuse could support generalization, without proving that a particular model learns the right structures.
 
-Then, as I wrote about recently, it started to feel more like **physics**. The discovery of scaling laws revealed a surprising order beneath the chaos. The messy, unpredictable process of training a neural network was governed by elegant, predictable power laws. It felt like we were uncovering the fundamental laws of a new kind of nature.
+## How this fits my earlier understanding
 
-But Solomonoff Induction and the principle of compression revealed a deeper layer still. Beneath the physics, there is **mathematics**. Not the mathematics of statistics and curve-fitting, but the deep, foundational mathematics of complexity, computation, and information theory. The goal of a deep learning model, in this view, is not just to match patterns in data. It's to find the **shortest possible program** that explains the data.
+I first approached machine learning as engineering: write the pipeline, choose the architecture, and improve the training run. Scaling laws added an empirical layer by showing regularities across runs. Information theory and algorithmic probability ask a different question about what makes an explanation useful for prediction.
 
-This doesn't invalidate the previous layers; it unifies them. The physics-like scaling laws emerge *because* the model is trying to find the most efficient compression. The engineering breakthroughs are just better ways to facilitate that search. It all comes down to compression.
+These perspectives complement each other. The engineering determines what system we can train. The empirical work tells us how that system behaves. The theoretical view suggests questions about why some representations generalize. I do not have a derivation showing that observed scaling laws follow from Solomonoff induction, and the connection should not be presented as one.
 
-### The Great Debate: Should We Engineer Structure or Just Scale?
+## Learned structure and designed structure
 
-This new lens also brings one of the biggest debates in AI into sharp focus: should we be manually engineering structure into our models, or should we just trust in the power of scale?
+This also changes how I read the debate over scale and hand-engineered knowledge. Language models can learn arithmetic patterns from data. AlphaZero learned strong game policies through self-play. AlexNet learned visual features that earlier systems often specified manually. In each case, learning replaced some work that people had previously encoded by hand.
 
-History has a clear pattern here.
+Those systems still contain substantial design choices. AlphaZero combines a neural network with search and known game rules. AlexNet uses convolutional structure. Transformers have their own architectural constraints and optimization procedures. Their success supports giving learning room to discover useful representations; it does not show that every prior or engineered component should be removed.
 
-*   **Arithmetic:** Early models like GPT-2 couldn't do simple math, so researchers experimented with building in explicit arithmetic modules. Then came GPT-3, a model so large that it learned to do basic math on its own, simply by compressing the patterns in its vast dataset. **Scale won.**
-*   **Chess:** For decades, the best chess engines were built on hand-crafted value functions, where humans painstakingly defined what mattered. Then came AlphaZero, a deep neural network that was just given the rules and told to play against itself. It discovered strategies far beyond what any human had ever conceived. **Scale won.**
-*   **Computer Vision:** The field was once dominated by hand-designed feature extractors like SIFT and HOG. Then came AlexNet, a relatively simple convolutional network scaled up on a huge dataset. It learned its own features that blew everything else out of the water. **Scale won.**
-
-Time and time again, we've seen that neural networks, when given enough data and enough pressure to compress that data, are the ultimate feature extractors. They discover structures that are more powerful and nuanced than anything we could have designed by hand.
-
-This leads to a powerful, and somewhat humbling, conclusion that seems to be the guiding philosophy at places like OpenAI: **Scale is the ultimate prior.** Don't hard-code structure unless you absolutely have to. Let the model find its own way, because its way is probably better.
-
-### The Final Layer of Understanding
-
-Of course, the story isn't over. Maybe high-level reasoning is different. Maybe it's a type of structure so brittle and complex that it can't be compressed smoothly from data alone. I don't know the answer to that, and the uncertainty is part of the excitement.
-
-But what I do know is that my own mental model has been compressed. The journey from seeing AI as programming, then as physics, and now as a form of applied computational mathematics feels like a journey toward a first principle.
-
-When I started this blog, I wrote about deconstructing things to find their foundations. It seems I've been accidentally doing that to my own understanding. And right now, the foundation looks a lot like this: the universe is full of structure, and intelligence is the process of finding the most elegant, compressed representation of that structure. The future of AI might just be about finding the shortest programs that explain everything.
-
+The question I want to carry forward is which structures are better learned and which make learning more effective when we supply them. Compression gives me a way to think about that question, but the answer has to come from comparisons. A satisfying theory becomes useful when it tells me what to measure and what result would change my mind.

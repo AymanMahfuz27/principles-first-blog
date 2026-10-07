@@ -1,16 +1,11 @@
-## Principles First: Deconstructing the Future, One Layer at a Time
+# Principles First
 
-I’ve always been fascinated by how things *really* work. Not just at the surface level, but all the way down to the fundamental ideas that everything is built on. The world of technology, especially in AI, often feels like a skyscraper where we’re all living on the top floor, using incredible tools without always knowing what’s holding the whole thing up. My goal with this blog is to take a different approach: to start at the top and drill all the way down to the foundations.
+I started this blog because I want to understand how the systems I use actually work. Using a model and understanding it are different levels of knowledge. I can get useful output from a transformer without knowing why attention helps, how the training objective shapes its representations, or which parts of its behavior remain unexplained. I want to close that gap.
 
-This isn’t just about explaining cool new tech. It’s a personal mission to reverse-engineer the breakthroughs that are shaping our future. I want to take a cutting-edge concept—a new AI architecture, a mind-bending physics paper, or a societal shift driven by technology—and peel back the layers, one by one, until we arrive at the core principles. It's about connecting the dots from a complex research paper back to the simple, powerful ideas that made it possible.
+My approach is to start with a system that interests me and work backward through its dependencies. A new architecture leads to a training method, the training method leads to an optimization problem, and the optimization problem leads to the mathematics underneath it. The point is to build a mental model I can use when the implementation changes, rather than memorize the current vocabulary.
 
-For me, this approach is both a learning tool and a way of thinking. I’m Ayman, and I’m driven by a deep curiosity to not just use technology, but to understand it, build it, and push its limits. I believe that the biggest leaps forward come from a deep, first-principles understanding. You can’t build the next generation of AI models if you don’t grasp the linear algebra and calculus that started it all. You can’t truly innovate without appreciating the shoulders you’re standing on.
+Writing makes that process harder to fake. An idea can feel clear while I'm reading a paper because the author supplies the missing steps. Explaining it myself exposes the places where I've accepted a claim without understanding the mechanism. Those gaps usually tell me what to study or test next.
 
-So, what can you expect from this blog?
+I'm Ayman. I work on software and machine learning, and I want to build systems whose behavior I can reason about. This blog will include explanations of papers, intuitions I'm developing, and experiments that test those intuitions. Some of the ideas will be incomplete. I'll distinguish what I observed from what I think it means.
 
-*   **Top-Down Exploration:** We’ll start with the latest and greatest—think new models from OpenAI, DeepMind, or emerging research trends. From there, we’ll work our way backward.
-*   **A-Technical Deep Dives:** I’ll break down the jargon and complex math into intuitive explanations, without sacrificing the technical depth. The goal is to make you feel like you’ve built the concept from the ground up yourself.
-*   **Hands-On Mentality:** This is a journey of discovery. I’ll share my own "aha!" moments, the dead ends I hit, and the core insights I gain along the way. I'll be referencing key papers, but I'll also bring in my own perspective from tinkering and building.
-
-*Principles First* is for the builders, the thinkers, and the perpetually curious. It’s for anyone who isn’t satisfied with just knowing *what* a new technology does, but is obsessed with understanding *why* it works and *how* it came to be. If that sounds like you, then you’re in the right place. Let’s start digging.
-
+The useful endpoint is an explanation that survives a new example. If I understand why a technique works, I should be able to say when it will fail, what assumptions it depends on, and how I might adapt it. That's the standard I'm trying to hold myself to here.

@@ -1,38 +1,29 @@
-## The Difference Between Feeling and Knowing: A New Benchmark for AI Intelligence
+# Compression, explanation, and understanding
 
-The world of AI is stuck in a cycle. A new, challenging benchmark emerges—a test of reasoning, long-context memory, or complex code generation. For a brief moment, it feels like we've found a true ceiling for our models. Then, within weeks or months, the frontier models shatter it, and we move on to the next one. This relentless pace of progress is incredible, but it's also forcing a deeper question: Are we really measuring intelligence, or are we just getting better at teaching our models to pass tests?
+A model can produce a correct answer without giving us a useful account of why it is correct. That matters if we want AI to contribute to science. A prediction may help us choose an action; an explanation can tell us which relationship to test, where the prediction will fail, and how to apply the result elsewhere.
 
-I believe the missing piece is something we've been treating as a secondary goal: **explainability**. Not just as a tool for transparency or safety, but as a core capability of intelligence itself. True understanding isn't just about getting the right answer; it's about being able to explain *why* it's the right answer.
+I think explanation deserves more attention as a capability in its own right. It should be evaluated alongside task performance, because a fluent justification can be wrong even when the answer is right. The challenge is measuring whether the explanation captures something real about the problem or the computation that produced the answer.
 
-### The Soccer Analogy: The Intuition of a Coming Goal
+## The soccer example
 
-To get a feel for what I mean, think about watching a soccer game. Sometimes, you can just *feel* that a goal is coming. The rhythm of the match shifts. The passes connect with a new crispness. The attacking team pins the defenders in their own half, the pressure building like a gathering storm. It's a sense of inevitability that comes from a deep, almost subconscious pattern recognition, built over thousands of hours of watching the game.
+When I watch soccer, I can sometimes sense that a goal is becoming more likely before I can explain the change. The attacking team may have pinned the defense back, improved its passing rhythm, or started creating space in a particular area. Repeated exposure makes those patterns recognizable.
 
-Most fans have that gut feeling. But very few can articulate the precise tactical shifts that create it—the subtle change in a midfielder's positioning, the way a fullback overlaps to create a 2-vs-1 situation, the fractional delay in a defender's reaction. The person who can not only feel the goal coming but can also explain the geometric and tactical reasons *why* it's coming—that person doesn't just have intuition. They have a deeper understanding.
+A tactical explanation goes further. It identifies an overlap that creates a two-against-one, a midfielder who pulls a defender away, or a delay that opens a passing lane. Those claims can be checked against the play. They also help explain why a superficially similar attack might fail.
 
-This is the gap I see in our AI systems today. We have built models that have a superhuman "feel" for the game, but we haven't yet taught them how to be expert analysts.
+The distinction I care about is between recognizing a pattern and identifying relationships that let someone else reason about it. Both are useful. An explanation becomes more valuable when it makes predictions that the original intuition did not make explicit.
 
-### From Hand-Crafted Rules to Latent Intuition
+## What learned models make difficult
 
-In the early days of AI, we tried to build in understanding from the top down. We hand-crafted value functions for chess programs, telling them explicitly that controlling the center was good and losing your queen was bad. The systems were interpretable, but brittle.
+Earlier chess systems often used evaluation functions with hand-designed terms. That made parts of the scoring process easy to inspect, though inspecting those terms did not explain every search decision. Learned systems such as AlphaZero replaced much of that evaluation with a neural network trained through self-play. They still use game rules and search; the learned evaluation is the part whose reasoning is harder to express in ordinary language.
 
-Then came the deep learning revolution. Systems like AlphaZero were not given any human-designed rules. They learned through pure self-play, developing a "feel" for the game that was far beyond human comprehension. It was a monumental leap in performance, but it came at the cost of explainability. We had created a genius that couldn't explain its own thoughts.
+Language models complicate the distinction because they can generate an explanation on request. The explanation is another output of the model. Its coherence does not guarantee that it faithfully describes the internal computation responsible for the answer. It may instead be a plausible account assembled after the answer was chosen.
 
-Today's LLMs are the next step in this evolution. They are trained not on the rules of a game, but on the entirety of human language and knowledge. They compress this vast ocean of data into a high-dimensional latent space, developing an "intuition" about everything from coding patterns to historical analogies. But when we ask them to explain their reasoning, they are often just rationalizing after the fact. They are giving us a plausible story, not a faithful account of the internal computations that led to the answer.
+There are also two different targets for explanation. We might want to understand how the model computed an answer, or understand the external phenomenon it predicts. A faithful account of the first does not automatically provide a scientific theory of the second. A model could rely on a useful correlation that has little to do with the underlying cause.
 
-### A Benchmark for Scientific Discovery
+## What I would want a benchmark to measure
 
-This is why I believe the next great benchmark in AI won't be about performance, but about explanation. Imagine an AI that could not only beat the world champion at chess, but could also generate a human-understandable treatise on chess strategy, revealing new principles that humans have missed for centuries.
+A strong explanation benchmark would test consequences, rather than reward persuasive prose. In chess, a model might explain why a move works and predict how the evaluation changes when a piece moves. In biology, it might propose a mechanism that leads to an experiment with a distinguishable outcome. In cosmology, it might turn a pattern in observations into a hypothesis with predictions beyond the original dataset.
 
-Now, let's scale that idea. Imagine an AI that could not only predict how a protein will fold, but could also explain the underlying biophysical principles in a way that allows us to design new medicines. Imagine an AI that could not only analyze petabytes of cosmological data, but could also articulate a new, testable hypothesis about the nature of dark matter.
+These tests would still need domain-specific standards. Mathematical claims require proof, causal claims require appropriate evidence, and uncertain predictions require calibrated confidence. A single score for sounding reasonable would reproduce the problem we were trying to solve.
 
-If we can build models that can faithfully explain their own compressed, latent understanding of the world, they will become more than just tools. They will become engines of scientific discovery. They will be our collaborators in the quest to understand the universe.
-
-### Intelligence That Can Be Held to Account
-
-In science, a theory isn't accepted just because it's elegant. It must be testable, falsifiable, and built on a foundation of logical reasoning. We demand proofs in mathematics, mechanisms in biology, and equations in physics. We should demand the same rigor from our most advanced AI.
-
-If a model is to be considered truly intelligent, it must be able to withstand intellectual scrutiny. It must be able to justify its conclusions, not just state them. The ability to compress the world into a useful model is a form of intelligence. But the ability to decompress that model into a communicable, verifiable explanation is a higher form of intelligence still.
-
-This isn't just about alignment or preventing bad outcomes. It's about fulfilling the deepest promise of AI: to create not just a new kind of mind, but a new partner in our collective search for knowledge. It's about building an intelligence that can not only help us find the answers, but can help us understand them. And that is a goal worth striving for.
-
+My interest in explainability comes from this transfer. If a model has learned structure that supports strong predictions, can it express enough of that structure for people to test and use? The value would be more than reassurance about an answer. It would be knowledge that survives scrutiny and helps us design the next investigation.
