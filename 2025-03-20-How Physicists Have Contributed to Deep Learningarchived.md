@@ -1,28 +1,21 @@
-## How Physicists Turned AI from an Art into a Science
+# What physics contributed to deep learning
 
-If you pay close attention to the names on the biggest AI papers from the last few years, you'll start to notice a pattern. Alongside the computer scientists and engineers, there's a growing number of researchers who cut their teeth not on algorithms, but on quantum mechanics and statistical physics. It's a quiet but powerful trend: the mindset of theoretical physics is fundamentally reshaping how we build and understand AI.
+The contribution from physics that interests me most is a way of studying systems whose internal behavior is difficult to describe in full. A neural network has many interacting parameters, yet some of its aggregate behavior follows regular patterns. Finding those patterns can help us predict a training outcome without understanding every weight.
 
-For a long time, progress in deep learning felt more like an art than a science. It was a field driven by alchemy and intuition. Researchers, myself included, would tinker with architectures, tune hyperparameters, and pray for a dip in the loss curve. It worked, but it was messy and unpredictable. There didn't seem to be a grand, unifying theory.
+That is one reason the scaling-law papers changed how I thought about deep learning. Before reading them, I mostly understood model development as a sequence of engineering experiments: change the architecture, tune the hyperparameters, and watch the loss. Those experiments still matter, but they can be organized around relationships that hold across many runs.
 
-Then, starting around 2018, something began to change. Physicists from top-tier labs like OpenAI, DeepMind, and Anthropic started bringing their unique toolkit to the world of AI. Where many of us saw a chaotic mess of trial-and-error, they saw a complex system waiting to be described by universal laws. They are trained to stare into the abyss of a seemingly random, high-dimensional system and find the elegant, underlying principles that govern it. Sound familiar?
+## Predicting and allocating resources
 
-The breakthrough moment for me, and for the field, was the 2020 paper, "Scaling Laws for Neural Language Models," led by physicists Jared Kaplan and Sam McCandlish at OpenAI. This paper was a thunderclap. It showed that the chaotic process of training a neural network wasn't chaotic at all. It was predictable. The model's performance improved not randomly, but according to precise, mathematical power-law relationships that connected the model's size, the dataset's size, and the amount of compute used. Suddenly, the alchemy started to look like physics.
+The 2020 paper [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361), whose authors include Jared Kaplan and Sam McCandlish, measured power-law relationships between language-model loss and model size, dataset size, and compute. It did not make every aspect of training predictable. It showed that useful regularities could emerge at the level of the whole system.
 
-Two years later, the team at DeepMind, which also included key physicists, dropped the "Chinchilla" paper. They used the insights from scaling laws not just to predict performance, but to *optimize* it. They realized that most of the huge models at the time were like bodybuilders who only trained their upper body—they were massively oversized in one area (parameters) and underdeveloped in another (training data). By training smaller models on much more data, they achieved better performance with a fraction of the compute. This wasn't just about making things bigger; it was about making them *proportional*, a concept every physicist understands in their bones.
+The practical value is that a small set of measurements can inform a much larger decision. If a relationship holds in the regime we care about, we can estimate what an additional unit of compute might buy. We can also notice when a result departs from the expected trend and investigate whether the setup changed.
 
-### Why Physicists? What's Their Secret?
+[The Chinchilla work](https://arxiv.org/abs/2203.15556) took the allocation question further. At a fixed compute budget, should we train a larger model on less data or a smaller model on more data? Its results showed that many large models were undertrained relative to a compute-optimal allocation. The improvement came from balancing resources, not from making every resource larger.
 
-So, why are physicists so uniquely suited to this new era of AI research? I think it comes down to their core intellectual training. A physicist is trained to do three things exceptionally well:
+## The habit I want to borrow
 
-1.  **Find the Invariants:** They look at a complex, dynamic system and ask, "What stays the same when everything else changes?"
-2.  **Think in Terms of Scale:** They are comfortable reasoning about how systems behave at different scales, from the microscopic to the cosmic.
-3.  **Abstract Away Complexity:** They have a knack for taking a messy, real-world phenomenon and creating a simplified, abstract model that captures its essential behavior.
+Physics encourages looking for a description that captures the behavior relevant to a question while leaving out details that do not change the answer. That can mean searching for invariants, measuring how a system behaves at different scales, or choosing an approximation that can be tested. These habits are useful in machine learning because exhaustive explanations of a large network are rarely available.
 
-This is the exact toolkit you need to make sense of a 175-billion parameter neural network.
+They also require restraint. A fitted curve is not automatically a fundamental law, and success in one range does not guarantee that the relationship continues indefinitely. Architecture, data, optimization, and evaluation can change the regime. The model is useful only while its assumptions remain adequate.
 
-### The New Science of AI
-
-This infusion of physics-based thinking has transformed deep learning. We've moved from a purely empirical, "let's try it and see" approach to one that is grounded in the search for fundamental principles. The quest for new "scaling laws" and other universal truths is now a major research direction in its own right.
-
-For a builder like me, this is incredibly exciting. It means we're no longer just fumbling in the dark. We have a compass. We can make predictions, allocate resources intelligently, and chart a course toward more capable systems with a new level of scientific rigor. The black box is becoming a little less black. We're not just building intelligent systems; we're starting to uncover the fundamental principles of intelligence itself. And that's a quest that's as profound as any in science.
-
+I do not think deep learning became a science when physicists entered it, or that this approach belongs exclusively to physics. The value for me is methodological. I want to move between experiment and explanation: measure a pattern, propose why it might occur, then test the prediction on a setting that could disprove it. That gives the next experiment a purpose beyond hoping for a better loss curve.

@@ -1,51 +1,32 @@
-## The Hidden Mind of a Language Model: Are We Talking to a Genius That's Just Bad at Explaining Itself?
+# What capabilities are already in a pretrained model?
 
-**A quick note:** This post is me thinking out loud. It’s a collection of hunches, questions, and speculations about where the most exciting part of AI is heading. As of March 3rd, 2025, it looks like some of these hunches might be onto something: [https://arxiv.org/abs/2502.17416](https://arxiv.org/abs/2502.17416)
+I have been trying to separate two questions about language models: what training teaches them, and what makes that learning accessible at inference time. A pretrained model can contain useful information without reliably producing it in response to a request. Prompting and post-training can change that reliability. I want to understand how much improvement comes from eliciting an existing capability and how much comes from learning a new one.
 
----
+This is a speculative post. I do not have evidence for a coherent intelligence hidden underneath the model's ordinary behavior. As of March 3, 2025, [Reasoning with Latent Thoughts: On the Power of Looped Transformers](https://arxiv.org/abs/2502.17416) gives me another reason to investigate internal computation, but it does not establish the broader hypothesis I'm considering here.
 
-I've been spending a lot of time working with Large Language Models (LLMs), and I can't shake a particular feeling: are we only scratching the surface of what these things actually "know"? We see them write code, ace exams, and generate creative prose, but most of this comes after a heavy dose of Reinforcement Learning from Human Feedback (RLHF) or other fine-tuning. It often feels like we're not teaching the model new things, but rather teaching it how to *access* and *present* the knowledge it already gained during its massive pre-training phase.
+## What post-training changes
 
-This has led me down a rabbit hole of thinking about the "latent intelligence" of LLMs. What if, buried deep within those billions of parameters, there's a far more capable and coherent intelligence than what we typically interact with? What if the model, in its raw, pre-trained state, is like a brilliant but incredibly disorganized library, and all our prompting tricks are just clever ways of finding the right book?
+My initial intuition was that reinforcement learning from human feedback mainly teaches a model how to present what it learned during pretraining. It rewards useful answers, appropriate behavior, and responses that match a user's intent. That can make a capability much easier to access without teaching the underlying subject from scratch.
 
-### RLHF: A Polishing Tool, Not a Chisel
+The distinction is less clean than that intuition suggests. Post-training changes the weights, so it can also change what the model knows and which strategies it learns. We cannot classify every gain as either presentation or new knowledge by inspecting the final answer. We need comparisons that hold the task and evaluation fixed while changing the training or elicitation method.
 
-My current working theory is that RLHF and its variants are primarily about shaping a model's *behavior*, not expanding its core knowledge. When we give it feedback, we're not teaching it calculus for the first time; we're teaching it to be a better, more patient, and more coherent tutor. We're rewarding it for explaining its thought process, for being polite, for not making up facts. It's an incredibly powerful polishing tool, but it might not be the right tool for uncovering fundamentally new capabilities.
+## Why prompting and extra compute matter
 
-This isn't to say RLHF isn't amazing. It's what makes these models usable and safe. But it makes me wonder if we're spending all our time polishing the outside of a treasure chest when we haven't even figured out how to open it properly.
+Chain-of-thought prompting made this question concrete for me. Asking a model to produce intermediate steps can improve its performance on reasoning tasks. One interpretation is that the prompt elicits a strategy the model already learned. Another part of the effect may come from giving it additional tokens on which to compute. Better output does not by itself tell us which internal mechanism changed.
 
-### The Magic of "Let's Think Step-by-Step"
+Test-time compute introduces a related ambiguity. Sampling more candidates and selecting among them can find a correct answer even when most attempts fail. A longer reasoning trajectory may also improve a single attempt. Both can increase accuracy, but they have different costs and imply different things about the model's capabilities. I would want to distinguish them before saying that more compute uncovers deeper understanding.
 
-The first big clue for me was the discovery of chain-of-thought (CoT) prompting. The fact that simply telling a model to "think step-by-step" can dramatically improve its reasoning ability is wild. It suggests that the reasoning pathways *already exist* within the network, but they need to be explicitly activated.
+This is why I am interested in access to internal representations. If useful computation is present but inconsistently elicited, perhaps an intervention could make it more reliable. Work on induction heads shows that some learned mechanisms can be identified and studied. It does not follow that there is a single reasoning switch we can activate, or that suppressing an apparent shortcut will improve behavior across tasks.
 
-This is what I mean by the "disorganized library." The model has read all the books on logic, math, and physics, but it doesn't automatically know how to connect them in a coherent sequence. A CoT prompt is like giving it a library card and a set of instructions: "Go to the logic section, then the math section, and show your work." What if we could find a more direct way to do this, without having to "trick" the model with clever prompts?
+## What I would want to test
 
-### Are We Just Brute-Forcing Insight?
+The useful version of this idea is measurable. Start with a task the model sometimes solves, identify a candidate representation or mechanism, and intervene on it. Then test whether the improvement holds on new examples, whether other capabilities degrade, and whether the effect survives controls. That would be stronger evidence than finding a prompt that happens to work well.
 
-Another piece of the puzzle is test-time compute. We often see that giving a model more time and computational budget to generate an answer leads to better results. But what's really happening here? Are we enabling deeper, more profound thought? Or are we just letting the model take a thousand random shots at the target in the hope that one of them hits the bullseye?
+I still think there is room to improve how we use pretrained models. Some gains will require new training, some better inference procedures, and some a clearer understanding of the representations already learned. My interest is in distinguishing those cases so we can spend compute on the part that actually limits performance.
 
-I suspect it's often the latter. The model is exploring more of its vast internal state, and with enough random walks, it eventually stumbles upon a more coherent path. This is exciting because it means the right answers are in there somewhere! But it's also inefficient. It feels like we're trying to find a specific key in a giant warehouse by just wandering around in the dark. There has to be a better way to turn on the lights.
+Papers that shaped this question:
 
-### The Dream of a "Native" Interface
-
-This all points to a fascinating and, I think, underexplored frontier in AI research: how do we build a more "native" interface to an LLM's internal knowledge? Instead of just talking to it through a text prompt, what if we could interact with its internal representations directly?
-
-Research into things like "induction heads" shows that models learn all sorts of internal shortcuts and patterns. What if we could learn to identify and activate the "good" patterns (the ones that correspond to logical reasoning) and suppress the "bad" ones (the lazy shortcuts)? This could be a way to get the model's best performance without the need for convoluted prompts or massive test-time compute.
-
-This is the speculative part, but it's what gets me the most excited. Are there hidden capabilities in these models that we haven't even discovered yet? We see glimpses of creativity, meta-reasoning, and even a primitive form of self-correction. What else is lying dormant in that vast, latent space?
-
-### The Path Forward: Less Polishing, More Exploring
-
-The current path seems to be: scale the model, scale the data, and then apply more and more domain-specific RLHF to patch up the behavioral quirks. And that works! But it feels like a brute-force approach.
-
-I'm more excited by the idea of exploring the existing landscape of the model's mind. It's a call to my fellow builders and researchers: let's spend a bit less time on the final polish and a bit more time on cartography. Let's map out the internal states, figure out how to navigate them intentionally, and see if we can unlock the genius that might already be hiding in plain sight.
-
----
-
-**A Few Papers That Got Me Thinking:**
-
--   Ziegler et al. (2019): _Fine-Tuning Language Models from Human Preferences_
--   Wei et al. (2022): _Chain-of-Thought Prompting Elicits Reasoning in Large Language Models_
--   Olsson et al. (2022): _In-Context Learning and Induction Heads_
--   Kaplan et al. (2020): _Scaling Laws for Neural Language Models_
-
+- Ziegler et al. (2019), *Fine-Tuning Language Models from Human Preferences*.
+- Wei et al. (2022), *Chain-of-Thought Prompting Elicits Reasoning in Large Language Models*.
+- Olsson et al. (2022), *In-Context Learning and Induction Heads*.
+- Kaplan et al. (2020), *Scaling Laws for Neural Language Models*.

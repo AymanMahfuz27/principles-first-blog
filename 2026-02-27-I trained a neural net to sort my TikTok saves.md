@@ -1,41 +1,37 @@
 # I trained a neural net to sort my TikTok saves
 
-On TikTok, you can save videos to folders. But the UX for it is three separate taps: save, view folders, pick a folder. That friction is enough that most people just don't bother. Everything gets dumped into one unsorted pile, and the folder system goes unused.
+I built a classifier that suggests a folder for each of my saved TikTok videos. The problem was a small piece of interface friction: saving a video, opening the folders, and selecting one required three separate taps. I often skipped the last two and ended up with an unsorted collection. A useful prediction could turn that into confirming a suggested folder.
 
-I wanted to fix that. What if, when you press save, the app already knew which folder the video should go in? You'd get a one-tap confirmation instead of a three-tap flow.
+The categories are personal. A model has to learn the way I organize videos, rather than assign them to a universal taxonomy. I wanted to see whether visual content and speech contained enough consistent signal to learn those choices from a small labeled set.
 
-The question was whether you could actually predict someone's personal folder taxonomy from the video content alone. These are short-form videos with a lot going on: visuals, audio, speech, music, text overlays. But the hypothesis was that each folder has a consistent enough signal across those modalities that a classifier could learn it.
+## Extracting the representation
 
-So I built one.
+I used pretrained models to extract features and trained a small classifier on top. For each video, I sample 5 frames uniformly and encode them with CLIP ViT-B/32. Each frame produces a 512-dimensional embedding; averaging them gives one visual vector for the video.
 
-## The pipeline
+For the other modality, I extract the audio, transcribe it with Whisper, and encode the transcript with CLIP's text encoder. That produces another 512-dimensional vector. It represents the spoken content through the transcript, rather than directly modeling music or other audio signals. Speech was useful for distinguishing several of my folders.
 
-I didn't train a video model from scratch. Instead I used pretrained foundation models for feature extraction and trained a lightweight classifier on top.
+I L2-normalize each modality independently and concatenate the vectors into a 1024-dimensional input. The classifier is an MLP with hidden widths of 256 and 128, followed by an output for each class. Independent normalization keeps one modality's vector magnitude from dominating before the classifier learns how to use them.
 
-For visual features, I sample 5 frames uniformly from each video and encode them with CLIP (ViT-B/32), which produces a 512-d embedding per frame. I average-pool these into a single visual vector per video. For audio features, I extract the audio track, transcribe it with Whisper, and encode the transcript with CLIP's text encoder, producing another 512-d vector. This captures the spoken content, which turns out to be a strong discriminative signal between categories.
+I trained with class-weighted cross-entropy because the folders were imbalanced. Without weighting, the model tended to predict the majority class and ignore smaller categories. Weighting made errors on those categories contribute more to training. The classifier trains in seconds; the expensive step is extracting CLIP and Whisper features, which took about 10 minutes for 600 videos on a consumer GPU.
 
-I concatenate both modality vectors into a 1024-d representation, L2-normalize each modality independently so neither dominates, and feed it into a two-layer MLP (256 → 128 → N classes) trained with class-weighted cross-entropy. Class weighting was necessary because my labeled data was heavily skewed toward certain folders. Without it, the model converged to predicting the majority class and ignoring everything else. With it, it learned the minority categories properly.
+## What the data supported
 
-The whole classifier trains in seconds. The expensive part is the one-time feature extraction pass through CLIP and Whisper, which takes about 10 minutes for 600 videos on a consumer GPU.
+When TikTok was at risk of being banned, I saved around 600 bookmarked videos to a USB drive. The videos already in folders supplied labels. The remaining videos were the collection I wanted to sort.
 
-## The data
+The first version used 128 labeled videos across 6 categories and reached 93.8% cross-validation accuracy. After labeling more videos through the interface, I expanded to 213 labeled videos across 8 categories, with reported accuracy around 90%. These are results on my small personal dataset. They do not establish that the same setup would learn another person's folder choices equally well.
 
-When TikTok was about to get banned, I saved all my bookmarked videos to a USB drive. Around 600 of them. Some I had already sorted into folders, some I hadn't. The sorted ones became my training set. The unsorted ones became the inference set.
+Recall varied by category. Quran recitation videos had a recognizable combination of visual framing and Arabic speech and reached near-perfect recall. Categories based on a more subjective reason for saving a video were harder, especially with fewer examples. The content can only explain a folder choice if the reason for that choice is represented in the features.
 
-I started with 128 labeled videos across 6 categories and got 93.8% cross-validation accuracy. After labeling more data through the tool I built (described below), I expanded to 213 videos across 8 categories and the model held at ~90% accuracy. Per-category recall varies: folders with strong audiovisual signatures (like Quran recitation, which has distinct visual framing and Arabic speech) reach near-perfect recall. More subjective categories are harder to learn, especially with fewer examples, which is expected.
+## Closing the labeling loop
 
-## The sorting interface
+I built a local web interface around a full-screen video player. Folder buttons sit on the left, and the model's top-3 predictions and scores appear on the right. The suggested folder is highlighted, so I can inspect the prediction while watching the video.
 
-To make the labeling loop fast, I built a local web UI modeled after TikTok's own player. Full-screen video in the center, folder buttons on the left, and the model's top-3 predictions with confidence scores on the right. The predicted folder button is visually highlighted so you can see the suggestion at a glance.
+Clicking a folder or pressing a shortcut from 1–8 moves the file and advances to the next video. A retrain button runs feature extraction, training, and prediction generation in the background, then refreshes the suggestions. That makes the collection itself the source of additional labels as I correct or confirm the model.
 
-You watch a video, press the correct folder button (or a keyboard shortcut, 1-8), and it moves the file and auto-advances to the next video. There's a retrain button that re-runs the full pipeline in the background: feature extraction, training, and prediction regeneration. The UI refreshes with updated predictions when it finishes.
+The workflow is useful because it leaves the classification decision easy to check. Most videos take a few seconds to sort, and a correct suggestion reduces the action to confirmation. I still choose the folder when the prediction is wrong or the category depends on context the model cannot see.
 
-It works well. You settle into a flow where each video takes a couple of seconds, and the model's predictions are right often enough that you're mostly just confirming.
+## Possible extensions
 
-## What's next
+I want to try prioritizing uncertain videos in the labeling interface. That could make each new label more informative, although uncertainty alone does not guarantee that an example will improve the model. I also want to test CLIP-based zero-shot suggestions for a new folder from its name, followed by ordinary supervised training as labels accumulate.
 
-A few directions I'm thinking about. Active learning, where the UI prioritizes showing videos the model is least confident about, since those are the labels that would improve the model the most. Zero-shot bootstrapping for new folders using CLIP's text-image alignment, so you can create a "cooking" folder and get rough predictions from just the folder name before you have any labeled examples. And eventually a browser extension that hooks into TikTok's save action and suggests a folder at save time.
-
-## Stack
-
-Python end to end. CLIP and Whisper for feature extraction, PyTorch for the classifier, FastAPI for serving, and a single HTML file with inline CSS/JS for the frontend. About 900 lines across 4 files, no build step.
+A browser extension could eventually suggest the folder at save time. The current implementation is local: Python, CLIP, Whisper, PyTorch, and FastAPI, with one HTML file containing the frontend's CSS and JavaScript. It is about 900 lines across 4 files and has no build step.

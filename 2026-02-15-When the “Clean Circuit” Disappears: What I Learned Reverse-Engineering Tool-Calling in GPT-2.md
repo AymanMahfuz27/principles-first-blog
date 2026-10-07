@@ -1,228 +1,74 @@
-# When the “Clean Circuit” Disappears: What I Learned Reverse-Engineering Tool-Calling in GPT-2
-Check out the repo at : https://github.com/AymanMahfuz27/tool_call_mech_interp
+# Testing a proposed tool-calling circuit in GPT-2
 
-For the last few days, I’ve been running a mechanistic interpretability project on a question that matters a lot for modern agentic systems:
+I fine-tuned GPT-2 Small to choose whether to call a tool, then investigated which attention heads contributed to that choice. The model reached 99.5% test accuracy, but the 15-head circuit proposed by my initial rankings did not retain the behavior under ablation. The clearest result was that performance recovered only when I kept a much larger fraction of the heads.
 
-**How does a language model decide to call a tool vs answer directly?**
+The [repository](https://github.com/AymanMahfuz27/tool_call_mech_interp) contains the code and results. This is a controlled binary routing task in a small model. It lets me test an interpretability workflow, but it does not reproduce the complexity of tool use in a deployed assistant.
 
-If you care about reliability in AI assistants, this decision boundary is everything. A model that calls tools too often wastes latency and money. A model that calls tools too rarely hallucinates on questions that needed execution or retrieval.
+## The task and initial evidence
 
-I wanted to go beyond behavior-level evals and actually look inside the model.
+The model was GPT-2 Small with 124M parameters. Each input contained a user question and a list of available tools; the output was either `<|tool_call|>` or `<|no_tool|>`. The dataset had 10,000 examples with an exact 50/50 label balance. I also balanced number presence and dynamic cue words such as “today,” “current,” and “latest,” and included 30 minimal-pair counterfactuals.
 
-I fine-tuned GPT-2 Small on a balanced tool/no-tool task, then ran activation patching, direct logit attribution (DLA), SAE feature analysis, and circuit ablations. My first-pass results looked clean. Then I stress-tested my own assumptions, fixed a methodological leak, and the story got much more interesting.
+Those controls mattered because a model could achieve high accuracy through a shortcut. A number can appear in a factual question that needs no computation, and a tool-requiring question may contain no obvious dynamic keyword. Balancing those cues made the simplest explanation less plausible without ruling out every surface heuristic.
 
-This post is about that full arc: what I found, what broke, what held up, and why I think this matters for frontier labs.
+Activation patching ranked `L7H6` highest, with a score of `0.6058`. Direct logit attribution, or DLA, ranked `L11H8` highest, with a score of `13.4812`. Combining the rankings produced a proposed 15-head circuit. The difference between the patching and DLA rankings was consistent with earlier computation feeding a later readout, but it did not establish that two-stage mechanism.
 
----
+Patching and attribution answer different questions. An intervention can show that changing an activation affects the output under a particular setup. DLA measures a component's direct contribution to the logits. A component can rank highly by one measure without being sufficient for the complete behavior.
 
-## Why This Problem Matters
+## What happened when I ablated the circuit
 
-In production agent systems, tool routing is not a side detail. It is a core control loop.
+I tested sufficiency by keeping the selected 15 heads and zeroing the other 129. I tested necessity by zeroing the selected heads and keeping the others. On the initial 30-case slice, accuracy was 0.50 in the sufficiency condition and 1.00 in the necessity condition. I then expanded the check to 400 balanced cases.
 
-Every frontier lab that ships assistants with retrieval, calculators, APIs, browsers, or code execution is implicitly betting on stable tool-use decisions under distribution shift. If the routing mechanism is brittle, you get silent failure modes:
+| Intervention | Accuracy | Correct cases |
+|---|---:|---:|
+| Keep the selected 15 heads; zero the other 129 | 0.5000 | 200/400 |
+| Zero the selected 15 heads; keep the other 129 | 0.9975 | 399/400 |
 
-- over-calling tools on easy static facts
-- under-calling tools on dynamic or computational queries
-- unstable behavior after small tuning updates
+The selected heads were not sufficient under this intervention, and removing them caused very little accuracy loss. The one failure after removal prevents a claim of strict non-necessity on that sample. More broadly, the result did not support my initial interpretation that a compact set of highly ranked heads controlled the task.
 
-Behavioral metrics alone tell you **that** it fails. Mechanistic work can help you understand **why**.
+Zeroing 129 heads is also a destructive intervention. Chance accuracy in that condition does not independently identify the natural computation the model uses. It tells me that this proposed circuit does not preserve the behavior when most of the surrounding attention computation is removed.
 
----
+## How much of the model had to remain
 
-## The Setup
+The circuit-size sweep made the pattern clearer. The columns below report accuracy after keeping or removing the ranked set of heads.
 
-I trained GPT-2 Small (124M) on a binary decision task:
+| Ranked heads selected | Keep selected heads | Remove selected heads |
+|---|---:|---:|
+| 1–30 | ~0.50 | ~1.00 |
+| 60 | 0.86 | 0.55 |
+| 100 | 0.99 | 0.50 |
+| 140 | 1.00 | 0.50 |
 
-- Input: user question + available tools list
-- Output token: `<|tool_call|>` or `<|no_tool|>`
+Under these ablations, a large retained set recovered the task while small retained sets did not. The results are consistent with distributed and redundant contributions. They are not a complete circuit description: the sweep is head-focused, excludes a full account of MLP computation, and depends on the ranking and ablation method.
 
-Dataset:
+## Checking the SAE intervention path
 
-- 10,000 examples
-- exact 50/50 label balance
-- explicit balancing of two obvious confounds:
-  - number presence
-  - dynamic cue words (e.g. “today”, “current”, “latest”)
-- 30 minimal-pair counterfactuals
+Sparse autoencoder analysis identified features with large absolute Cohen's d values between classes. Removing individual features had near-zero causal effects. That could reflect a distributed representation, but a broken intervention path could produce the same apparent result.
 
-The model reached **99.5% test accuracy**.
+I added positive controls through the same hook-based path. Ablating the known-causal head `L2H1` produced a mean logit-difference shift of `-0.065` and a mean absolute per-prompt shift of `0.153`. A strong intervention at `blocks.6.hook_resid_pre`, the SAE hook point, produced a mean absolute shift of `4.159`. The pipeline could move the logits when given an intervention with a measurable effect.
 
-That sounds almost solved, but high accuracy is exactly where interpretability can get dangerous: it’s easy to tell yourself a neat mechanistic story that later collapses under causal checks.
+Those controls reduced the likelihood of a completely ineffective hook. They did not establish that every SAE feature intervention was adequate or that the near-zero effects had a single explanation. Multi-feature and subspace interventions would be needed to investigate whether the relevant signal is distributed across features.
 
----
+## Robustness and remaining shortcuts
 
-## The First Mechanistic Signal
+I repeated the patching-pair analysis with seeds 42 and 123, using 20 pairs each. Across all 144 heads, the Spearman rank correlation was 0.995. The top-10 overlap was 10/10 and the top-20 overlap was 20/20, although the highest-ranked head changed between `L2H1` and `L7H6`.
 
-Core analyses on the fine-tuned checkpoint:
+The broad ranking was stable in that check while the local winner changed. These were different patching-pair seeds, not independent training replications. The result supports stability of that analysis on the checkpoint; it does not establish robustness across separately trained models.
 
-- Activation patching top head: `L7H6` (score `0.6058`)
-- DLA top head: `L11H8` (score `13.4812`)
-- Combined ranking proposed a 15-head circuit
+Behavioral probes also exposed a remaining weakness. Accuracy was 73.3% on numeric questions that did not need a tool, 100% on tool-requiring questions without the number keyword, and 100% on computation-adjacent definitional prompts. A simple keyword account did not explain the whole pattern, but more elaborate surface heuristics remained plausible. Some numeric factual questions still triggered tools unnecessarily.
 
-At a glance, this looked like a plausible compute→readout split:
+## Fixing an analysis leak
 
-- mid/early heads matter causally (patching)
-- late heads dominate direct logit writing (DLA)
+During the analysis, I found a risk of label-token leakage in the prompts. I changed the inference paths to use unlabeled prompts ending in `...Assistant:` and reject prompts containing decision tokens in the DLA, SAE, and ablation paths. I added tests to prevent the same mistake from returning.
 
-That pattern is still present after fixes, but wording matters:
+This was an important correction because an analysis prompt can make the apparent mechanism easier than the original task. Confound controls in the dataset do not protect against a label introduced later by the evaluation code. The analysis pipeline has to preserve the problem we intended to investigate.
 
-I now treat this as **evidence consistent with** a two-stage compute→readout pattern, not a theorem.
+The next checks I would prioritize are at least 3 independently trained checkpoints, mean ablation and path-specific interventions, multi-feature SAE interventions, MLP-inclusive analysis, and template or paraphrase holdouts. Larger models and realistic tool schemas would then test whether the conclusions transfer beyond this binary setup.
 
----
+The project changed the standard I use for a circuit claim. High behavioral accuracy and a plausible ranking are the beginning of the investigation. The ablations, positive controls, and leakage checks determine how much of the explanation survives.
 
-## The Ablation Result That Changed the Story
+## Reproduction artifacts
 
-I tested the 15-head circuit with sufficiency/necessity ablations:
-
-- Sufficiency (keep only 15 heads, zero 129): **0.50**
-- Necessity (ablate those 15, keep 129): **1.00** on a 30-case slice
-
-Because small-slice necessity can be misleading, I ran a larger stress check:
-
-- 400 balanced cases
-- Sufficiency: **0.5000** (200/400)
-- Necessity: **0.9975** (399/400)
-
-Interpretation:
-
-- the selected 15 heads are **not sufficient**
-- they are **near-non-necessary** in this setting
-
-Not strictly non-necessary, because we do see one failure in 400 after ablation. But still close enough that “tiny sparse circuit controls behavior” is not defensible here.
-
-Also important: sufficiency=0.50 is partly a property of very aggressive zero-ablation, not pure mechanism. Zeroing 129 heads is destructive. I call that out explicitly because otherwise the metric invites over-interpretation.
-
----
-
-## The Strongest Evidence: Circuit-Size Sweep
-
-I then swept circuit size to see when performance recovers:
-
-- 1–30 heads: sufficiency stays at ~0.50, necessity ~1.00
-- 60 heads: sufficiency 0.86, necessity 0.55
-- 100 heads: sufficiency 0.99, necessity 0.50
-- 140 heads: sufficiency 1.00, necessity 0.50
-
-This is the clearest empirical signal in the project:
-
-**Behavior is distributed and redundant.**  
-You only recover sufficiency when you retain a large fraction of heads.
-
----
-
-## The SAE Puzzle (and the Credibility Patch I Needed)
-
-SAE analysis found top features with huge effect sizes (large |Cohen’s d|), but single-feature causal removals were near-zero.
-
-That could mean distributed representation.  
-It could also mean my intervention plumbing is wrong.
-
-So I added positive controls using the same hook-based intervention path:
-
-- Ablating known-causal head `L2H1`:
-  - mean logit-diff shift: `-0.065`
-  - mean absolute per-prompt shift: `0.153`
-- Strong control at SAE hook point (`blocks.6.hook_resid_pre`):
-  - mean absolute shift: `4.159`
-
-This doesn’t “solve” SAE causality, but it materially improves credibility:
-the pipeline **can** move logits when interventions are actually causal/strong.
-
-So near-zero single-feature effects are much more plausibly about representation structure, not just a broken hook.
-
----
-
-## Robustness Across Seeds (At Least One Extra Check)
-
-I added an extra seed robustness run for patching pairs:
-
-- seed 42 vs seed 123, 20 pairs each
-- Spearman rank correlation across all 144 heads: **0.995**
-- Top-10 overlap: **10/10**, Top-20 overlap: **20/20**
-- Top head swapped (`L2H1` vs `L7H6`)
-
-Takeaway:
-
-- local “winner” head can swap
-- global ranking structure stayed very stable in this check
-
-This is not full multi-seed training replication yet, but it’s better than a pure single-seed narrative.
-
----
-
-## Behavioral Probing: What the Model Still Gets Wrong
-
-Adversarial probes remained revealing:
-
-- numbers + no tool needed: **73.3%**
-- no-number-keyword + tool needed: **100%**
-- computation-adjacent definitional prompts: **100%**
-
-So pure keyword matching is unlikely, but richer surface heuristics are still plausible.
-The model seems to over-trigger tool calls on some numeric factual questions (“specific quantity” as proxy for “needs lookup/compute”).
-
----
-
-## A Methodological Miss I Had to Fix
-
-One important correction during this pass:
-
-I found and fixed label-token leakage risk in analysis prompts.  
-I now enforce unlabeled inference prompts (`...Assistant:`) and reject prompts containing decision tokens in DLA/SAE/ablation paths.
-
-I also added tests to prevent regression.
-
-This was a good reminder that in mech interp, small bookkeeping mistakes can create big interpretive illusions.
-
----
-
-## What This Means for Frontier Labs
-
-If you work on tool-use reliability at scale (Anthropic/OpenAI/DeepMind/etc.), I think there are three practical implications:
-
-1. **Don’t trust clean sparse-circuit stories by default.**  
-   Confound control and ablation stress tests can turn “clean circuit” into “distributed redundancy” quickly.
-
-2. **Require causal positive controls, not just correlational feature rankings.**  
-   Big effect sizes in SAE space are not equivalent to causal leverage.
-
-3. **Treat routing as a systems problem, not a single-metric problem.**  
-   You need behavior evals + mechanism evals + robustness evals together.
-
-The main engineering lesson here is one I care about a lot:
-**claim discipline beats pretty plots**.
-
----
-
-## What I’d Do Next
-
-If I extended this with more compute/time, top priorities would be:
-
-- multi-seed checkpoint replication (>=3 full runs)
-- mean-ablation and path-specific interventions (less destructive than zero-ablation)
-- multi-feature/subspace SAE interventions
-- MLP-inclusive circuit analysis (not heads only)
-- template-holdout and paraphrase-holdout generalization
-
-I also want to run this on larger and more realistic tool-calling setups, where the decision boundary is noisier and closer to production behavior.
-
----
-
-## Closing
-
-I started this project hoping to find a neat, compact “tool-call circuit.”  
-Instead, after tighter controls, I found something messier and probably more realistic: a redundant distributed mechanism with stable global structure and unstable local leaders.
-
-I’m happy with that outcome.
-
-Not because it’s cleaner.  
-Because it’s harder to fake.
-
----
-
-### Repro Artifacts
-
-Main outputs:
+The main result files are:
 
 - `results/full_results.json`
 - `results/deep_analysis_results.json`
@@ -231,7 +77,7 @@ Main outputs:
 - `results/causal_positive_control.json`
 - `results/patching_seed_robustness.json`
 
-Core scripts:
+The core scripts are:
 
 - `run_pipeline.py`
 - `scripts/deep_analysis.py`

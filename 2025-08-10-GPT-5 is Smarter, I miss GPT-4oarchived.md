@@ -1,74 +1,33 @@
-# GPT-5 Is Smarter — But I Miss GPT-4o
+# GPT-5 is smarter, but I miss GPT-4o
 
-I’ve spent a lot of time with these models. I use ChatGPT for everything — to learn deeply, to test my understanding, to talk through research ideas, to build intuition, and to think through decisions. I’ve used it to code, to write, to study, to plan. In a lot of ways, it’s become a tool I depend on — not just to get work done, but to grow.
+GPT-5 has improved several tasks I use language models for, especially coding and structured work. In my early use, it follows complex instructions more reliably and handles longer tasks with fewer lost threads. I still prefer GPT-4o for many learning conversations. The improvement in task performance has not translated into a better experience for every use case.
 
-Many people asked me if there's anything ChatGPT has genuinely helped me with that wasn't productivity based. And I would reply with "of course." Something I've been thinking about even before GPT-5 came out was how much my curiosity on everything has grown because I have ChatGPT. I can ask any question and not only get an answer, but a heartfelt, personal narrative on the subject that fed me knowledge and pushed me to dive deeper. Whether diving deep into deep learning, or skimming the math that quants use to understand it a bit, or diving into the current policital climate, ChatGPT allowed me to have so many curious conversations. 
+I use ChatGPT to develop an intuition, test my understanding, and work through ideas that are not fully formed. That includes deep learning, unfamiliar mathematics, research questions, and topics outside my main work. The value is often in the sequence of exchanges. A response helps when it makes the next step in my thinking clearer.
 
-So when GPT-5 came out, I was genuinely excited. And in many ways, it delivered. It’s clearly better at certain tasks — more logical, more precise, and especially strong in structured workflows. When I use it inside tools like Cursor for writing code or working on complex documents, I can feel the improvement. It holds more context, follows instructions more carefully, and doesn’t lose the thread as easily. It's so so smart.
+## What changed in the conversation
 
-But in the actual **chat** experience — the core of what I use ChatGPT for — something feels off.
+GPT-4o often followed the direction of the discussion without requiring me to specify every transition. It could answer the immediate question and supply a connection that made the broader idea easier to understand. The structure was usually clear enough to follow while leaving room to explore.
 
----
+GPT-5's answers have often felt more formal and self-contained. They can be precise, but I sometimes reread them instead of continuing the conversation. When I am learning something new, that friction matters. An answer that satisfies the prompt can still leave the thread of inquiry harder to continue.
 
-## GPT-5 Feels Like a Stranger
+I compared the models on identical prompts and saw this pattern in the conversations I tried. That is an observation about my usage, not a systematic evaluation of all users or tasks. Custom instructions and the personality options I tested, including the nerd option, did not consistently recover the interaction I wanted. I sometimes switched back to 4o.
 
-The best way I can describe it is this:
+What I miss is the momentum of learning. The model does not need to act like a friend or simulate an emotional relationship to provide it. It needs to track what I understand, connect the current question to the previous one, and give enough explanation that the next question arises naturally.
 
-> **GPT-4o talked *with* me. GPT-5 talks *to* me.**
+## What might explain the difference
 
-With GPT-4o, the conversation flowed. It responded to my tone, followed the rhythm of my thinking, and felt like it was building ideas alongside me. It was structured, but natural. Conversational. Thoughtful. It didn’t just answer my questions — it made learning feel exciting. It felt like there was someone on the other end genuinely trying to understand what I was trying to understand.
+I can observe the difference more confidently than I can explain its cause. Training for precise instruction-following could favor responses that stay close to the requested task. Tuning for factual caution could affect how freely the model uses uncertain examples or analogies. A system optimized across coding, agents, documents, and chat might also make different tradeoffs from one whose conversational defaults suit my usage.
 
-GPT-5, on the other hand, feels distant. Cold, even. It gives good answers, but they don’t invite you in. The tone is overly formal, the flow is rigid, and the responses don’t feel personal anymore. It often reads like a summary rather than a conversation. This sucks because it now feels like the curiosity is one sided. 
+Those are possibilities, not findings about GPT-5's training. A formal tone is not evidence that GPT-4.1 was merged into the model, and I do not have grounds to attribute the behavior to a particular architectural lineage. System instructions, routing, and other product choices could also contribute.
 
-I've been comparing responses of both models to identical prompts to validate this, and it's been true for every conversation. 
+Safety is another possible influence, but it is too broad an explanation on its own. Reducing overdependence and avoiding unwarranted validation are reasonable goals. Neither requires an explanation to become rigid or a conversation to lose continuity. The product question is which behaviors improve usefulness without introducing those risks.
 
-I’m not saying I’m emotionally attached to a model, or treating it like a friend — I’m not. But what GPT-4o gave me was **momentum**. It made me want to keep asking, keep learning, keep building. GPT-5 doesn’t give me that same feeling. I find myself stopping more. Rereading instead of continuing. Sometimes even switching back to 4o just to get that sense of flow again. No amount of custom instruction tuning seems to get me the desired behavior. The new personality menu also felt like a dead end. (I tried the nerd one, didn't work)
+## Useful engagement without excessive agreement
 
----
+The earlier GPT-4o sycophancy problem is relevant because it shows a failure at the other extreme. A model that praises every premise and agrees too easily does not help me reason. [OpenAI's account of that update](https://openai.com/index/sycophancy-in-gpt-4o/) describes why excessively agreeable behavior was a problem. The experience I want includes correction when my reasoning is wrong.
 
-## What Might’ve Caused This Shift?
+Conversational continuity and agreement are separate properties. A model can disagree while following my line of thought closely. It can explain an unfamiliar idea intuitively while marking uncertainty. It can help me explore a possibility without pretending the possibility is established.
 
-Here’s what I think might’ve gone wrong — and to be clear, these are speculations and all understandable decisions from a safety, alignment, and product standpoint. But they’ve had real side effects.
+That is the distinction I want evaluated. Coding accuracy, factual reliability, and instruction-following are essential, but the quality of a learning conversation also depends on whether the response builds a usable mental model. The next-turn experience matters because it determines whether I keep investigating or lose the thread.
 
-### 1. **Overemphasis on Hallucination Avoidance**
-
-GPT-5 is extremely careful with facts — and that’s a good thing. But the model seems optimized to avoid any expression that might be speculative, metaphorical, or uncertain. That also means it's less free to explain intuitively or creatively. The tone becomes clipped, cautious, and less human. 4o explored on its own, 5 just answers exactly my question. When I'm trying to learn something brand new, I prefer the former. 
-
-### 2. **Merged with Instruction-Tuned Models (Like GPT-4.1)**
-
-Models like GPT-4.1 were known for precise instruction-following and strong formatting. They were great at getting exactly what you asked for. But they weren’t great conversationalists. If GPT-5 is built partly on those instruction-aligned paths, it would explain why the tone now feels more rigid and less interactive.
-
-### 3. **General-Purpose Tuning vs. Chat-Specific Optimization**
-
-GPT-4o felt like it was designed for *ChatGPT*. It had a strong conversational identity, almost like it had been trained specifically for thoughtful, flowing dialogue. GPT-5 feels like it was trained for broader tasks — coding, agents, document understanding, enterprise use — and chat is just one mode among many. The tone reflects that.
-
-### 4. **Personality Was Likely Suppressed for Safety Reasons**
-
-OpenAI has talked about users forming emotional attachments to models and the risks of delusion or overdependence. I understand why that’s concerning. But in avoiding those edge cases, it seems like GPT-5 was trained to be more neutral and reserved. Unfortunately, personality and presence aren’t just risks — they’re a huge part of what made the chat experience feel alive and engaging in 4o.
-
----
-
-
-## Presence ≠ Sycophancy — What GPT-5 Is Missing Isn’t About Roleplay
-
-There’s been a lot of discussion lately about user attachment to language models, and OpenAI is right to take it seriously. The last GPT-4o update that got rolled back was because it became too agreeable — too sycophantic. That version didn’t last long because **users pushed back hard**. It wasn’t useful. It wasn’t real. It felt like pandering. OpenAI is correct to not allow that, and their handling of the situation and the findings they shared in their post-mortem shows that they take the topic very seriously. 
-
-But the thing users are missing now in GPT-5 is **something else entirely**. The pushback from the previous 4o update proves that. It’s not about emotion or personality in the anthropomorphic sense. It’s about *presence*. A model that responds with a conversational rhythm that keeps you thinking. One that builds ideas with you. One that actually *feels like it’s in the room*, tracking the dialogue, not just parsing the prompt.
-
-GPT-4o had that.
-
-And what made it remarkable is that it didn’t need a user-configurable “tone slider” or special instruction prompts to get there. It just worked — *because it worked with you*. It paid attention. It had just the right balance of structure and freedom, clarity and flexibility. That’s what made it general-purpose. Not because it was trained for every task, but because it could meet you at the level of your thinking. Maybe it was a better handling of memories and past conversations, but it just felt more personal. 
-
-That’s what’s missing in GPT-5. Not warmth. Not roleplay. Just *connection*.
-
----
-
-## Final Thoughts
-
-GPT-5 is probably the smartest model in the world right now. Its reasoning ability is unmatched. Its coding fluency, factual accuracy, and logical precision are incredible. As a technical system, it’s a triumph.
-
-But GPT-4o was something else. It was the **best model I’ve ever used**, not because it was the most powerful, but because it made me want to keep learning. It made conversation feel productive. It didn’t just answer my questions — it helped me stay in the process of figuring things out.
-
-That’s what made it special. 4o will go down in history as something amazing.
-
-And whatever the future of language models looks like, I hope that’s not treated as a soft feature. It’s not. For users like me — and I think for many others — it’s core to what makes these tools worth using in the first place.
+As of this early comparison, GPT-5 is stronger for several kinds of work I do. GPT-4o remains the model that most often makes an exploratory conversation productive for me. I hope improvements in capability preserve that quality, because helping a user stay inside a difficult question is part of the utility of the system.
